@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container form">
+    <h4 style="margin-left: 45px">Edit Movie Name</h4>
+        <hr>
+        <br>
+        {{ form.hidden_tag() }}
+        {{ wtf.quick_form(form) }}
+
+    </div>
+
+{% endblock %}

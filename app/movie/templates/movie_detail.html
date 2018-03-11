@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h4>Video {{ movie.id }}</h4>
+        <hr>
+        <br>
+
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <td>Movie Name : </td>
+                <td>{{ movie.name }}</td>
+            </tr>
+            <tr>
+                <td>Location : </td>
+                <td>{{ movie.location }}</td>
+            </tr>
+            <tr>
+                <td>Play count : </td>
+                <td>{{ movie.play_count }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+{% endblock %}
