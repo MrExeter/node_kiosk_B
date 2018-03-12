@@ -13,7 +13,7 @@ login_manager.login_view = 'authentication.do_the_login'
 login_manager.session_protection = 'strong'
 bcrypt = Bcrypt()
 
-UPLOAD_FOLDER = '/app/static/videos'
+UPLOAD_FOLDER = '/home/pi/node_kiosk_B/app/static/videos'
 ALLOWED_EXTENSIONS = set(['mp4', 'jpeg', 'avi', 'mov', 'wmv'])
 
 
