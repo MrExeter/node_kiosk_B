@@ -32,8 +32,10 @@ def movie_detail(movie_id):
 @login_required
 def delete_movie(movie_id):
     movie = Movie.query.get(movie_id)
+    filename = movie.file_name
 
     if request.method == 'POST':
+        os.remove(os.path.join(UPLOAD_FOLDER, filename))
         db.session.delete(movie)
         db.session.commit()
         flash('movie deleted successfully')
@@ -52,7 +54,6 @@ def edit_movie(movie_id):
 
     if form.validate_on_submit():
         movie.name = form.name.data
-        movie.location = form.location.data
         db.session.add(movie)
         db.session.commit()
         flash('movie updated successfully')
@@ -68,12 +69,17 @@ def create_movie():
     form = CreateMovieForm()
 
     if form.validate_on_submit():
+        # f = request.files['file']
+        f = form.video.data
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(UPLOAD_FOLDER, filename))
 
         Movie.create_movie(
             name=form.name.data,
-            location=form.location.data
+            file_name=filename,
+            location=os.path.join(UPLOAD_FOLDER, filename)
         )
-        flash('Registration Successful')
+        flash('Movie Created Successful')
         return redirect(url_for('main.movie_list'))
 
     return render_template('create_movie.html', form=form)
@@ -91,10 +97,6 @@ def uploader():
     if request.method == 'POST':
         f = request.files['file']
         filename = secure_filename(f.filename)
-        # f.save(secure_filename(f.filename))
-        app_path = os.getcwd()
-        the_path = app_path + UPLOAD_FOLDER + '/'
-        # f.save(the_path, filename)
         f.save(os.path.join(UPLOAD_FOLDER, filename))
         return 'file uploaded successfully'
 

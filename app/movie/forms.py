@@ -1,7 +1,8 @@
 
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from flask_wtf.file import FileRequired
+from wtforms import StringField, SubmitField, FileField
 from wtforms.validators import DataRequired, ValidationError
 import re
 
@@ -31,13 +32,14 @@ from app.movie.models import Movie
 
 class CreateMovieForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    location = StringField('Location', validators=[DataRequired()])
+    video = FileField(validators=[FileRequired()])
+    # location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Create')
 
 
 class EditMovieForm(FlaskForm):
     name = StringField('name', validators=[DataRequired()])
-    location = StringField('Location', validators=[DataRequired()])
+    # location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Update')
 
 

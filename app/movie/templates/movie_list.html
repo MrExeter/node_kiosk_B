@@ -7,20 +7,21 @@
         <h4>Movie List</h4>
         <hr>
         <br>
-
+            {% if movies %}
             <table class="table table-bordered table-striped table-hover">
                 <tr>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>Location</th>
+                    <th>File name</th>
                     <th>Play Count</th>
+                    <th>Actions</th>
                 </tr>
 
                 {% for movie in movies %}
                     <tr>
                         <td>{{ movie.id }}</td>
                         <td>{{ movie.name }}</td>
-                        <td>{{ movie.location }}</td>
+                        <td>{{ movie.file_name }}</td>
                         <td>{{ movie.play_count }}</td>
                         <td>
                             <a href="{{ url_for('main.movie_detail', movie_id=movie.id)}}" class="btn btn-success">
@@ -38,10 +39,11 @@
 
                         </td>
                     </tr>
-
                 {% endfor %}
-
             </table>
+            {% else %}
+                <p>-- No Content Found --</p>
+            {% endif %}
 
     </div>
 
