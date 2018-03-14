@@ -1,4 +1,9 @@
-
+'''
+Description - Authorization Routes
+@author - John Sentz
+@date - 13-Mar-2018
+@time - 5:35 PM
+'''
 
 
 from flask import render_template, request, flash, redirect, url_for

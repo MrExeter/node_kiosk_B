@@ -1,12 +1,13 @@
 import os
-from flask import render_template, flash, request, redirect, url_for, session
+from flask import render_template, flash, request, redirect, url_for, jsonify
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 
-from app import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER
+from app import db, UPLOAD_FOLDER
 from app.movie import main
 from app.movie.models import Movie
 from app.movie.forms import CreateMovieForm, EditMovieForm
+from app.utils.utils import SystemMonitor
 
 
 @main.route('/')
@@ -85,43 +86,23 @@ def create_movie():
     return render_template('create_movie.html', form=form)
 
 
-@main.route('/upload')
+@main.route('/system_stats')
 @login_required
-def upload():
-    return render_template('upload_movie.html')
+def get_system_stats():
+    system_monitor = SystemMonitor()
+    return system_monitor.get_system_stats()
 
-
-@main.route('/uploader', methods=['GET', 'POST'])
-@login_required
-def uploader():
-    if request.method == 'POST':
-        f = request.files['file']
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(UPLOAD_FOLDER, filename))
-        return 'file uploaded successfully'
-
-# def allowed_file(filename):
-#     return '.' in filename and \
-#            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# @main.route('/upload')
+# @login_required
+# def upload():
+#     return render_template('upload_movie.html')
 #
 #
 # @main.route('/uploader', methods=['GET', 'POST'])
-# def upload_file():
+# @login_required
+# def uploader():
 #     if request.method == 'POST':
-#         # check if the post request has the file part
-#         if 'file' not in request.files:
-#             flash('No file part')
-#             return redirect(request.url)
-#         file = request.files['file']
-#         # if user does not select file, browser also
-#         # submit a empty part without filename
-#         if file.filename == '':
-#             flash('No selected file')
-#             return redirect(request.url)
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             file.save(os.path.join(main.config['UPLOAD_FOLDER'], filename))
-#             return redirect(url_for('uploaded_file',
-#                                     filename=filename))
-#
-#         return render_template('upload_movie.html')
+#         f = request.files['file']
+#         filename = secure_filename(f.filename)
+#         f.save(os.path.join(UPLOAD_FOLDER, filename))
+#         return 'file uploaded successfully'
