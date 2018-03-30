@@ -1,7 +1,10 @@
 import os
-from flask import render_template, flash, request, redirect, url_for, jsonify
+from flask import render_template, flash, request, redirect, url_for, jsonify, logging
 from flask_login import login_required
+from omxplayer.player import OMXPlayer
 from werkzeug.utils import secure_filename
+
+import time
 
 from app import db, UPLOAD_FOLDER
 from app.movie import main
@@ -87,11 +90,23 @@ def create_movie():
 
 
 @main.route('/system_stats')
-@login_required
+# @login_required
 def get_system_stats():
     system_monitor = SystemMonitor()
     return system_monitor.get_system_stats()
 
+
+@main.route('/video')
+def play_video():
+    VIDEO_1_PATH = "app/static/videos/test_video.mp4"
+    player_log = logging.getLogger("Player 1")
+
+    player = OMXPlayer(VIDEO_1_PATH,
+                       dbus_name='org.mpris.MediaPlayer2.omxplayer1')
+    player.set_aspect_mode('stretch')
+    player = None
+
+    return ''
 # @main.route('/upload')
 # @login_required
 # def upload():

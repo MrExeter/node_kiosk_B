@@ -9,6 +9,7 @@ Description - User authorization forms
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.ext.csrf.session import SessionSecureForm
 
 from app.auth.models import User
 

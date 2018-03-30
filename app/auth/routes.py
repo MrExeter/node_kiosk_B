@@ -8,6 +8,8 @@ Description - Authorization Routes
 
 from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_wtf import csrf
+
 from app.auth.forms import RegistrationForm, LoginForm
 from app.auth import authentication as at
 from app.auth.models import User
@@ -49,6 +51,11 @@ def do_the_login():
         return redirect(url_for('main.movie_list'))
 
     return render_template('login.html', form=form)
+
+
+@at.route('/authorize', methods='GET')
+def authorize_me():
+    pass
 
 
 @at.route('/logout')

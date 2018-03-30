@@ -25,7 +25,7 @@ class SystemMonitor:
         # Return CPU temperature as a character string
         cpu_temp = float(os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline())
         cpu_temp = float(cpu_temp / 1000.)
-        cpu_temp = str(round(cpu_temp, 1)) + " C"
+        cpu_temp = str(round(cpu_temp, 1))      # + " C"
 
         cpu_utilization = str(psutil.cpu_percent()) + '%'
 
@@ -77,13 +77,15 @@ class SystemMonitor:
             "disk_used_percent": disk_used_percent
         }
 
-        self.json_data = {
-            "cpu_temp": cpu_temp,
-            "cpu_utilization": cpu_utilization,
-            "memory_stats": memory_stats,
-            "disk_stats": disk_stats,
-            "uptime": uptime_stats
-        }
+        self.json_data = {"cpu_temp": cpu_temp,
+                          "cpu_utilization": cpu_utilization,
+                          "memory_stats": memory_stats,
+                          "disk_stats": disk_stats,
+                          "uptime": uptime_stats
+                          }
+
+    def __repr__(self):
+        return "Hello Dingus"
 
     def get_system_stats(self):
         return jsonify(self.json_data)

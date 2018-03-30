@@ -1,16 +1,19 @@
 import os
+
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
-from flask_bcrypt import Bcrypt
-from werkzeug.utils import secure_filename
+from flask_sqlalchemy import SQLAlchemy
+import jwt
+import datetime
+
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login_manager = LoginManager()
 login_manager.login_view = 'authentication.do_the_login'
-login_manager.session_protection = 'strong'
+login_manager.session_protection = 'basic'
 bcrypt = Bcrypt()
 
 UPLOAD_FOLDER = '/home/pi/node_kiosk_B/app/static/videos'
@@ -36,5 +39,6 @@ def create_app(config_type):
     app.register_blueprint(authentication)  # register authentication
 
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER     # set upload directory for videos
+
 
     return app

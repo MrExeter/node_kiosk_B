@@ -33,6 +33,14 @@ class User(UserMixin, db.Model):
         db.session.commit()
         return user
 
+    @classmethod
+    def find_by_email(cls, email):
+        return cls.query.filter_by(user_email=email).first()
+
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
+
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
