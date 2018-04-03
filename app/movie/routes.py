@@ -25,6 +25,13 @@ def movie_list():
     return render_template('movie_list.html', movies=movies)
 
 
+@main.route('/remote/movies')
+@login_required
+def remote_movie_list():
+    movies = Movie.query.all()
+    return render_template('movie_list.html', movies=movies)
+
+
 @main.route('/movie/detail/<movie_id>')
 @login_required
 def movie_detail(movie_id):
@@ -104,9 +111,11 @@ def play_video():
     player = OMXPlayer(VIDEO_1_PATH,
                        dbus_name='org.mpris.MediaPlayer2.omxplayer1')
     player.set_aspect_mode('stretch')
-    player = None
+    time.sleep(15)
+    player.quit()
 
     return ''
+
 # @main.route('/upload')
 # @login_required
 # def upload():

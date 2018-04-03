@@ -144,9 +144,9 @@ from security import authenticate, identity
 if __name__ == '__main__':
     flask_app = create_app('dev')
 
-    # JWT Authentication
-    api = Api(flask_app)
-    jwt = JWT(flask_app, authenticate, identity)  # generates endpoint /auth
+    # # JWT Authentication
+    # api = Api(flask_app)
+    # jwt = JWT(flask_app, authenticate, identity)  # generates endpoint /auth
 
     with flask_app.app_context():
         db.create_all()

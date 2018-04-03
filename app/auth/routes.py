@@ -6,7 +6,7 @@ Description - Authorization Routes
 '''
 
 
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import csrf
 
@@ -40,7 +40,7 @@ def do_the_login():
         flash('you are already logged-in')
         return redirect(url_for('main.movie_list'))
 
-    form = LoginForm()
+    form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
         user = User.query.filter_by(user_email=form.email.data).first()
         if not user or not user.check_password(form.password.data):
@@ -53,9 +53,10 @@ def do_the_login():
     return render_template('login.html', form=form)
 
 
-@at.route('/authorize', methods='GET')
+@at.route('/auth', methods=['GET'])
 def authorize_me():
-    pass
+    data = {'message': 'Hello from fake auth'}
+    return jsonify(data)
 
 
 @at.route('/logout')

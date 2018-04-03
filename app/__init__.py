@@ -5,8 +5,7 @@ from flask_bcrypt import Bcrypt
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-import jwt
-import datetime
+# from flask_wtf.csrf import CSRFProtect
 
 
 db = SQLAlchemy()
@@ -25,6 +24,12 @@ def create_app(config_type):
     configuration = os.path.join(os.getcwd(), 'config', config_type + '.py')
 
     app.config.from_pyfile(configuration)
+
+    # Disable CSRF
+    # csrf = CSRFProtect()
+    WTF_CSRF_CHECK_DEFAULT = False
+    WTF_CSRF_ENABLED = False
+    # csrf.init_app(app)
 
     db.init_app(app)  # bind database to flask app
     bootstrap.init_app(app)  # Initialize Bootstrap

@@ -10,6 +10,10 @@ Description - System monitor utilities
 import psutil
 import os
 
+from app import db, UPLOAD_FOLDER
+from app.movie import main
+from app.movie.models import Movie
+
 from flask import jsonify
 
 
@@ -77,11 +81,22 @@ class SystemMonitor:
             "disk_used_percent": disk_used_percent
         }
 
+        movie_output = []
+        movies = Movie.query.all()
+        for movie in movies:
+            movie_data = {}
+            movie_data['id'] = movie.id
+            movie_data['name'] = movie.name
+            movie_data['file'] = movie.file_name
+            movie_data['play_count'] = movie.play_count
+            movie_output.append(movie_data)
+
         self.json_data = {"cpu_temp": cpu_temp,
                           "cpu_utilization": cpu_utilization,
                           "memory_stats": memory_stats,
                           "disk_stats": disk_stats,
-                          "uptime": uptime_stats
+                          "uptime": uptime_stats,
+                          "movie_data": movie_output
                           }
 
     def __repr__(self):
