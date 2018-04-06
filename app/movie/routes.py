@@ -9,8 +9,8 @@ import time
 from app import db, UPLOAD_FOLDER
 from app.movie import main
 from app.movie.models import Movie
-from app.movie.forms import CreateMovieForm, EditMovieForm
-from app.utils.utils import SystemMonitor
+from app.movie.forms import CreateMovieForm
+from app.utils.utils import SystemMonitor, BobUecker
 
 
 @main.route('/')
@@ -55,22 +55,34 @@ def delete_movie(movie_id):
     return render_template('delete_movie.html', movie=movie, movie_id=movie_id)
 
 
-@main.route('/movie/edit/<movie_id>', methods=['GET', 'POST'])
-@login_required
-def edit_movie(movie_id):
-    movie = Movie.query.get(movie_id)
-
-    # session["current_address"] = movie.network_address  # temp store movie ip address in session
-    form = EditMovieForm(obj=movie)
-
-    if form.validate_on_submit():
-        movie.name = form.name.data
-        db.session.add(movie)
-        db.session.commit()
-        flash('movie updated successfully')
-        return redirect(url_for('main.movie_list'))
-
-    return render_template('edit_movie.html', form=form)
+# @main.route('/movie/edit/<movie_id>', methods=['GET', 'POST'])
+# @login_required
+# def edit_movie(movie_id):
+#     movie = Movie.query.get(movie_id)
+#     existing_filename = movie.file_name
+#     # session["current_address"] = movie.network_address  # temp store movie ip address in session
+#     form = EditMovieForm(obj=movie)
+#
+#     if form.validate_on_submit():
+#         f = form.video.data
+#         new_filename = secure_filename(f.filename)
+#         movie.name = form.name.data
+#
+#         if new_filename != existing_filename:
+#             os.remove(os.path.join(UPLOAD_FOLDER, existing_filename))
+#             f.save(os.path.join(UPLOAD_FOLDER, new_filename))
+#             movie.file_name = new_filename
+#
+#         else:
+#             f.save(os.path.join(UPLOAD_FOLDER, existing_filename))
+#             movie.file_name = existing_filename
+#
+#         db.session.add(movie)
+#         db.session.commit()
+#         flash('movie updated successfully')
+#         return redirect(url_for('main.movie_list'))
+#
+#     return render_template('edit_movie.html', form=form)
 
 
 @main.route('/create/movie', methods=['GET', 'POST'])
@@ -114,6 +126,23 @@ def play_video():
     time.sleep(15)
     player.quit()
 
+    return ''
+
+
+@main.route('/loop_video/')
+# @login_required
+def loop_video():
+    movie_id = request.args.get('movie_id')
+    movie = Movie.query.get(movie_id)
+    full_file_path = movie.location
+    BobUecker.loop_video(full_file_path)
+    return ''
+
+
+@main.route('/stop_loop_video/')
+# @login_required
+def stop_loop_video():
+    BobUecker.stop_video()
     return ''
 
 # @main.route('/upload')

@@ -36,10 +36,11 @@ class CreateMovieForm(FlaskForm):
     # location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Create')
 
-
-class EditMovieForm(FlaskForm):
-    name = StringField('name', validators=[DataRequired()])
-    # location = StringField('Location', validators=[DataRequired()])
-    submit = SubmitField('Update')
+#
+# class EditMovieForm(FlaskForm):
+#     name = StringField('Name', validators=[DataRequired()])
+#     video = FileField(validators=[FileRequired()])
+#     # location = StringField('Location', validators=[DataRequired()])
+#     submit = SubmitField('Update')
 
 

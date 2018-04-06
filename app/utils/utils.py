@@ -5,16 +5,15 @@ Description - System monitor utilities
 @time - 5:31 PM
 '''
 
+import os
+import subprocess
+
 # System monitor using psutil
 #
 import psutil
-import os
-
-from app import db, UPLOAD_FOLDER
-from app.movie import main
-from app.movie.models import Movie
-
 from flask import jsonify
+
+from app.movie.models import Movie
 
 
 class SystemMonitor:
@@ -104,4 +103,28 @@ class SystemMonitor:
 
     def get_system_stats(self):
         return jsonify(self.json_data)
+
+
+kill_command = 'sudo killall omxplayer.bin'
+loop_command = 'omxplayer -o local --loop --aspect-mode stretch '
+# loop_command = 'omxplayer -o local --loop --aspect-mode stretch /home/pi/node_kiosk_B/app/static/videos/'
+
+
+class BobUecker(object):
+    @classmethod
+    def loop_video(cls, full_file_path):
+        command = loop_command + full_file_path
+        os.system(kill_command)
+        process = subprocess.Popen([command],
+                                   shell=True,
+                                   stdin=None,
+                                   stdout=None,
+                                   stderr=None,
+                                   close_fds=True)
+        return None
+
+    @classmethod
+    def stop_video(cls):
+        os.system(kill_command)
+        return None
 

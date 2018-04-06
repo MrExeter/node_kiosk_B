@@ -28,6 +28,15 @@
 
         </table>
 
+        <a  href={{ url_for('main.movie_list') }}>
+            <button  class="btn btn-default"  label="Back" name="Back">Back</button>
+        </a>
+{#        <a  href={{ url_for('main.edit_movie', movie_id=movie.id) }}>#}
+{#            <button  class="btn btn-info"  label="Edit" name="Edit">Edit</button>#}
+{#        </a>#}
+        <a  href={{ url_for('main.delete_movie', movie_id=movie.id) }}>
+            <button  class="btn btn-danger"  label="Delete" name="Delete">Delete</button>
+        </a>
     </div>
 
 
