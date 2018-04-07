@@ -13,6 +13,7 @@ import subprocess
 import psutil
 from flask import jsonify
 
+from app import db
 from app.movie.models import Movie
 
 
@@ -84,19 +85,25 @@ class SystemMonitor:
         movies = Movie.query.all()
         for movie in movies:
             movie_data = {}
-            movie_data['id'] = movie.id
-            movie_data['name'] = movie.name
-            movie_data['file'] = movie.file_name
-            movie_data['play_count'] = movie.play_count
+            movie_data["id"] = movie.id
+            movie_data["name"] = movie.name
+            movie_data["file"] = movie.file_name
+            movie_data["play_count"] = movie.play_count
+            movie_data["currently_playing"] = str(movie.currently_playing)
             movie_output.append(movie_data)
 
-        self.json_data = {"cpu_temp": cpu_temp,
-                          "cpu_utilization": cpu_utilization,
-                          "memory_stats": memory_stats,
-                          "disk_stats": disk_stats,
-                          "uptime": uptime_stats,
-                          "movie_data": movie_output
-                          }
+        movie_output = sorted(movie_output, key=lambda i: i['id'], reverse=False)
+
+        self.json_data = {
+            "system": {
+                "cpu_temp": cpu_temp,
+                "cpu_utilization": cpu_utilization,
+                "memory_stats": memory_stats,
+                "disk_stats": disk_stats,
+                "uptime": uptime_stats},
+
+            "movie_data": movie_output
+        }
 
     def __repr__(self):
         return "Hello Dingus"
@@ -107,14 +114,34 @@ class SystemMonitor:
 
 kill_command = 'sudo killall omxplayer.bin'
 loop_command = 'omxplayer -o local --loop --aspect-mode stretch '
-# loop_command = 'omxplayer -o local --loop --aspect-mode stretch /home/pi/node_kiosk_B/app/static/videos/'
 
 
 class BobUecker(object):
+
     @classmethod
-    def loop_video(cls, full_file_path):
+    def all_not_playing(cls):
+        movies = Movie.query.all()
+        for movie in movies:
+            # Set all movies to not currently playing
+            movie.currently_playing = False
+            db.session.commit()
+
+        return ''
+
+    @classmethod
+    def loop_video(cls, video_id):
+
+        movie = Movie.query.get(video_id)
+
+        BobUecker.all_not_playing()
+
+        movie.currently_playing = True
+        db.session.commit()
+
+        full_file_path = movie.location
         command = loop_command + full_file_path
-        os.system(kill_command)
+        # os.system(kill_command)
+        BobUecker.stop_video()
         process = subprocess.Popen([command],
                                    shell=True,
                                    stdin=None,
@@ -127,4 +154,5 @@ class BobUecker(object):
     def stop_video(cls):
         os.system(kill_command)
         return None
+
 

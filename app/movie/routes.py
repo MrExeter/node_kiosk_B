@@ -132,16 +132,31 @@ def play_video():
 @main.route('/loop_video/')
 # @login_required
 def loop_video():
+
     movie_id = request.args.get('movie_id')
+
     movie = Movie.query.get(movie_id)
     full_file_path = movie.location
-    BobUecker.loop_video(full_file_path)
+
+    movie.currently_playing = True
+    db.session.commit()
+
+    BobUecker.loop_video(movie_id)
+
     return ''
 
 
 @main.route('/stop_loop_video/')
 # @login_required
 def stop_loop_video():
+
+    movies = Movie.query.all()
+    for movie in movies:
+        # Set all movies to not currently playing
+        movie.currently_playing = False
+
+    db.session.commit()
+
     BobUecker.stop_video()
     return ''
 
