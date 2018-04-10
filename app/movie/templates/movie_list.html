@@ -24,16 +24,17 @@
                         <td>{{ movie.file_name }}</td>
                         <td>{{ movie.play_count }}</td>
                         <td>
-                            <a href="{{ url_for('main.movie_detail', movie_id=movie.id)}}" class="btn btn-primary">
-                                View
-                            </a>
-{##}
-{#                            <a href="{{ url_for('main.edit_movie', movie_id=movie.id) }}" class="btn btn-group-sm btn-info">#}
-{#                                Edit#}
-{#                            </a>#}
 
-                            <a href="{{ url_for('main.delete_movie', movie_id=movie.id) }}" class="btn btn-group-sm btn-danger">
-                                Delete
+
+                            <a href="{{ url_for('main.movie_detail', movie_id=movie.id)}}" class="btn btn-primary a-btn-slide-text">
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                <span><strong>View</strong></span>
+                            </a>
+
+
+                            <a href="{{ url_for('main.delete_movie', movie_id=movie.id) }}" class="btn btn-danger a-btn-slide-text">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                <span><strong>Delete</strong></span>
                             </a>
 
 

@@ -1,15 +1,20 @@
-import os
-from flask import render_template, flash, request, redirect, url_for, jsonify, logging
-from flask_login import login_required
-from omxplayer.player import OMXPlayer
-from werkzeug.utils import secure_filename
+'''
+Description - Routes for kiosk movie model
+@author - John Sentz
+@date - 10-Apr-2018
+@time - 10:33 AM
+'''
 
-import time
+import os
+
+from flask import render_template, flash, request, redirect, url_for
+from flask_login import login_required
+from werkzeug.utils import secure_filename
 
 from app import db, UPLOAD_FOLDER
 from app.movie import main
-from app.movie.models import Movie
 from app.movie.forms import CreateMovieForm
+from app.movie.models import Movie
 from app.utils.utils import SystemMonitor, BobUecker
 
 
@@ -55,35 +60,6 @@ def delete_movie(movie_id):
     return render_template('delete_movie.html', movie=movie, movie_id=movie_id)
 
 
-# @main.route('/movie/edit/<movie_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_movie(movie_id):
-#     movie = Movie.query.get(movie_id)
-#     existing_filename = movie.file_name
-#     # session["current_address"] = movie.network_address  # temp store movie ip address in session
-#     form = EditMovieForm(obj=movie)
-#
-#     if form.validate_on_submit():
-#         f = form.video.data
-#         new_filename = secure_filename(f.filename)
-#         movie.name = form.name.data
-#
-#         if new_filename != existing_filename:
-#             os.remove(os.path.join(UPLOAD_FOLDER, existing_filename))
-#             f.save(os.path.join(UPLOAD_FOLDER, new_filename))
-#             movie.file_name = new_filename
-#
-#         else:
-#             f.save(os.path.join(UPLOAD_FOLDER, existing_filename))
-#             movie.file_name = existing_filename
-#
-#         db.session.add(movie)
-#         db.session.commit()
-#         flash('movie updated successfully')
-#         return redirect(url_for('main.movie_list'))
-#
-#     return render_template('edit_movie.html', form=form)
-
 
 @main.route('/create/movie', methods=['GET', 'POST'])
 @login_required
@@ -115,32 +91,11 @@ def get_system_stats():
     return system_monitor.get_system_stats()
 
 
-@main.route('/video')
-def play_video():
-    VIDEO_1_PATH = "app/static/videos/test_video.mp4"
-    player_log = logging.getLogger("Player 1")
-
-    player = OMXPlayer(VIDEO_1_PATH,
-                       dbus_name='org.mpris.MediaPlayer2.omxplayer1')
-    player.set_aspect_mode('stretch')
-    time.sleep(15)
-    player.quit()
-
-    return ''
-
-
 @main.route('/loop_video/')
 # @login_required
 def loop_video():
 
     movie_id = request.args.get('movie_id')
-
-    movie = Movie.query.get(movie_id)
-    full_file_path = movie.location
-
-    movie.currently_playing = True
-    db.session.commit()
-
     BobUecker.loop_video(movie_id)
 
     return ''
@@ -150,27 +105,6 @@ def loop_video():
 # @login_required
 def stop_loop_video():
 
-    movies = Movie.query.all()
-    for movie in movies:
-        # Set all movies to not currently playing
-        movie.currently_playing = False
-
-    db.session.commit()
-
+    BobUecker.all_not_playing()
     BobUecker.stop_video()
     return ''
-
-# @main.route('/upload')
-# @login_required
-# def upload():
-#     return render_template('upload_movie.html')
-#
-#
-# @main.route('/uploader', methods=['GET', 'POST'])
-# @login_required
-# def uploader():
-#     if request.method == 'POST':
-#         f = request.files['file']
-#         filename = secure_filename(f.filename)
-#         f.save(os.path.join(UPLOAD_FOLDER, filename))
-#         return 'file uploaded successfully'

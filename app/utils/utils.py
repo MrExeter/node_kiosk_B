@@ -135,9 +135,6 @@ class BobUecker(object):
 
         BobUecker.all_not_playing()
 
-        movie.currently_playing = True
-        db.session.commit()
-
         full_file_path = movie.location
         command = loop_command + full_file_path
         # os.system(kill_command)
@@ -148,6 +145,14 @@ class BobUecker(object):
                                    stdout=None,
                                    stderr=None,
                                    close_fds=True)
+        message = process.poll()
+        process_pid = process.pid
+
+        if process_pid and not message:
+            # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
+            movie.currently_playing = True
+            db.session.commit()
+
         return None
 
     @classmethod

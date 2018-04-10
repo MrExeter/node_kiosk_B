@@ -6,12 +6,11 @@ Description - Authorization Routes
 '''
 
 
-from flask import render_template, request, flash, redirect, url_for, jsonify
+from flask import render_template, flash, redirect, url_for, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_wtf import csrf
 
-from app.auth.forms import RegistrationForm, LoginForm
 from app.auth import authentication as at
+from app.auth.forms import RegistrationForm, LoginForm
 from app.auth.models import User
 
 

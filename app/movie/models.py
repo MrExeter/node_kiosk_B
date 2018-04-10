@@ -14,7 +14,7 @@ class Movie(db.Model):
     __tablename__ = 'movie'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False, index=True)
+    name = db.Column(db.String(64), nullable=False)
     file_name = db.Column(db.String(64), nullable=False)
     location = db.Column(db.String(128), nullable=False)
     play_count = db.Column(db.Integer)
