@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <h4 style="margin-left: 45px">Create a new Playlist</h4>
+        <hr>
+{##}
+{#        {% if stuff %}#}
+
+            {{ form.hidden_tag() }}
+            {{ wtf.quick_form(form) }}
+
+{#        {% else %}#}
+{##}
+{#            <p>-- You must add movies before you create a playlist --</p>#}
+{##}
+{#        {% endif %}#}
+
+
+    </div>
+
+{% endblock %}

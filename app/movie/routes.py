@@ -7,14 +7,15 @@ Description - Routes for kiosk movie model
 
 import os
 
+from sqlalchemy.exc import IntegrityError, DatabaseError, DataError
 from flask import render_template, flash, request, redirect, url_for
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 
 from app import db, UPLOAD_FOLDER
 from app.movie import main
-from app.movie.forms import CreateMovieForm
-from app.movie.models import Movie
+from app.movie.forms import CreateMovieForm, CreatePlaylistForm, EditPlaylistForm
+from app.movie.models import Movie, Playlist
 from app.utils.utils import SystemMonitor, BobUecker
 
 
@@ -60,7 +61,6 @@ def delete_movie(movie_id):
     return render_template('delete_movie.html', movie=movie, movie_id=movie_id)
 
 
-
 @main.route('/create/movie', methods=['GET', 'POST'])
 @login_required
 def create_movie():
@@ -82,6 +82,85 @@ def create_movie():
         return redirect(url_for('main.movie_list'))
 
     return render_template('create_movie.html', form=form)
+
+
+@main.route('/playlists')
+@login_required
+def playlist_list():
+    playlists = Playlist.query.all()
+
+    return render_template('playlist_list.html', playlists=playlists)
+
+
+@main.route('/create/playlist', methods=['GET', 'POST'])
+@login_required
+def create_playlist():
+    form = CreatePlaylistForm()
+    if form.validate_on_submit():
+
+        Playlist.create_playlist(form.name.data, form.movies.data)
+        flash('Playlist Creation Successful')
+        return redirect(url_for('main.playlist_list'))
+
+    return render_template('create_playlist.html', form=form)
+
+
+@main.route('/playlist/detail/<playlist_id>')
+@login_required
+def playlist_detail(playlist_id):
+    playlist = Playlist.query.get(playlist_id)
+    movies = []
+    for movie in playlist.playlists:
+        movies.append(movie)
+    return render_template('playlist_detail.html', playlist=playlist, movies=movies)
+
+
+@main.route('/playlist/edit/<playlist_id>', methods=['GET', 'POST'])
+@login_required
+def edit_playlist(playlist_id):
+    playlist = Playlist.query.get(playlist_id)
+    form = EditPlaylistForm(obj=playlist)
+
+    if form.validate_on_submit():
+        # kiosk.network_address = form.network_address.data
+        # kiosk.location = form.location.data
+        playlist.name = form.name.data
+        playlist.movies = form.movies.data
+
+        try:
+            db.session.add(playlist)
+            db.session.commit()
+            flash('Playlist updated successfully')
+            return redirect(url_for('main.playlist_list'))
+
+        except IntegrityError:
+            db.session.rollback()
+            print("Database Integrity Error encountered")
+
+        except DataError:
+            db.session.rollback()
+            print("Data Error encountered")
+
+        except DatabaseError:
+            db.session.rollback()
+            print("Database Error encountered")
+
+    return render_template('edit_playlist.html', form=form)
+
+
+@main.route('/playlist/delete/<playlist_id>', methods=['GET', 'POST'])
+@login_required
+def delete_playlist(playlist_id):
+    playlist = Playlist.query.get(playlist_id)
+
+    if request.method == 'POST':
+
+        db.session.delete(playlist)
+        db.session.commit()
+        flash('Playlist deleted successfully')
+        return redirect(url_for('main.playlist_list'))
+
+    return render_template('delete_playlist.html', playlist=playlist, playlist_id=playlist_id)
 
 
 @main.route('/system_stats')

@@ -113,7 +113,7 @@ class SystemMonitor:
 
 
 kill_command = 'sudo killall omxplayer.bin'
-loop_command = 'omxplayer -o local --loop --aspect-mode stretch '
+loop_command = 'omxplayer --no-osd -o local --loop --aspect-mode stretch '
 
 
 class BobUecker(object):

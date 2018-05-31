@@ -3,49 +3,42 @@
 {% block content %}
 
     <div class="container">
-
-        <h4 style="margin-left: 45px">Movie List</h4>
+        <h4 style="margin-left: 45px">Current Playlists</h4>
         <hr>
         <br>
-            {% if movies %}
+
+        {% if playlists %}
             <table class="table table-bordered table-striped table-hover">
                 <tr>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>File name</th>
-                    <th>Play Count</th>
                     <th>Actions</th>
                 </tr>
+                {% for playlist in playlists %}
 
-                {% for movie in movies %}
                     <tr>
-                        <td>{{ movie.id }}</td>
-                        <td>{{ movie.name }}</td>
-                        <td>{{ movie.file_name }}</td>
-                        <td>{{ movie.play_count }}</td>
+                        <td>{{ playlist.id }}</td>
+                        <td>{{ playlist.name }}</td>
                         <td>
-
-
-                            <a href="{{ url_for('main.movie_detail', movie_id=movie.id)}}" class="btn btn-primary a-btn-slide-text">
+                            <a href="{{ url_for('main.playlist_detail', playlist_id=playlist.id)}}" class="btn btn-primary a-btn-slide-text">
                                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                 <span><strong>View</strong></span>
                             </a>
 
-
-                            <a href="{{ url_for('main.delete_movie', movie_id=movie.id) }}" class="btn btn-danger a-btn-slide-text">
+                            <a href="{{ url_for('main.delete_playlist', playlist_id=playlist.id) }}" class="btn btn-danger a-btn-slide-text">
                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                 <span><strong>Delete</strong></span>
                             </a>
 
-
                         </td>
                     </tr>
+
+
                 {% endfor %}
             </table>
-            {% else %}
-                <p>-- No Content Found --</p>
-            {% endif %}
-
+        {% else %}
+            <p>-- No Playlists Found --</p>
+        {% endif %}
     </div>
 
 {% endblock %}

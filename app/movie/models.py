@@ -7,6 +7,13 @@ Description - Movie Model
 
 
 from app import db
+from sqlalchemy.exc import IntegrityError, DatabaseError, DataError
+
+movie_playlists = db.Table('movie_playlists',
+                           db.Column('movie_id', db.Integer, db.ForeignKey('movie.id')),
+                           db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id')),
+                           db.PrimaryKeyConstraint('movie_id', 'playlist_id')
+                           )
 
 
 class Movie(db.Model):
@@ -19,6 +26,7 @@ class Movie(db.Model):
     location = db.Column(db.String(128), nullable=False)
     play_count = db.Column(db.Integer)
     currently_playing = db.Column(db.Boolean, nullable=False)
+    movieplaylist = db.relationship('Playlist', secondary=movie_playlists, backref=db.backref('playlists', lazy='dynamic'))
 
     @classmethod
     def create_movie(cls, name, file_name, location):
@@ -38,4 +46,47 @@ class Movie(db.Model):
         self.currently_playing = currently_playing
 
     def __repr__(self):
-        return 'Video name : {}, File : {}, Play count = {}'.format(self.name, self.file_name, self.play_count)
+        return 'Video name : {}, File : {}'.format(self.name, self.file_name)
+
+
+class Playlist(db.Model):
+
+    __tablename__ = 'playlist'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False, unique=True)
+
+    def __init__(self, name):
+        self.name = name
+
+    # def get_movies(self):
+    #     movies = []
+    #     for movie in self.playlists():
+    #         movies.append(movie)
+    #     return movies
+
+    @classmethod
+    def create_playlist(cls, name, *movies):
+        playlist = cls(name)
+        try:
+            db.session.add(playlist)
+            db.session.commit()
+            for movie in movies:
+                playlist.playlists.extend(movie)
+
+            db.session.commit()
+
+        except IntegrityError:
+            db.session.rollback()
+            print("Database Integrity Error encountered")
+
+        except DataError:
+            db.session.rollback()
+            print("Data Error encountered")
+
+        except DatabaseError:
+            db.session.rollback()
+            print("Database Error encountered")
+
+    def __repr__(self):
+        return "Playlist : {}".format(self.name)

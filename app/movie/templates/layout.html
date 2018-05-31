@@ -30,6 +30,12 @@
                                     {% if current_user.is_authenticated %}
                                         <li><a href="{{ url_for('main.movie_list') }}">Movies</a></li>
                                         <li><a href="{{ url_for('main.create_movie') }}">Create Movie</a></li>
+                                        <li><a href="{{ url_for('main.playlist_list') }}">Playlists</a></li>
+
+
+                                        <li><a href="{{ url_for('main.create_playlist') }}">Create Playlist</a></li>
+
+
                                         <li><a href="{{ url_for('authentication.log_out_user') }}">Sign Out</a></li>
                                     {% else %}
                                         <li><a href="{{ url_for('authentication.register_user') }}"> Register </a></li>
