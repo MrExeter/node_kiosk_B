@@ -4,6 +4,8 @@ Description - Main app for kiosk controller
 @date - 10-Apr-2018
 @time - 10:31 AM
 '''
+from flask import session
+from omxplayer.player import OMXPlayer
 
 from app import create_app, db
 from app.auth.models import User

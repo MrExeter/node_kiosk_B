@@ -10,8 +10,12 @@ import subprocess
 
 # System monitor using psutil
 #
+from time import sleep
+
+import omxplayer
 import psutil
-from flask import jsonify
+from flask import jsonify, session
+from omxplayer.player import OMXPlayer
 
 from app import db
 from app.movie.models import Movie
@@ -114,9 +118,19 @@ class SystemMonitor:
 
 kill_command = 'sudo killall omxplayer.bin'
 loop_command = 'omxplayer --no-osd -o local --loop --aspect-mode stretch '
+single_play_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
+
+playlist_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
 
 
 class BobUecker(object):
+
+    # def create_player(movie, args):
+    #     global g_player
+    #     g_player = OMXPlayer(movie, args)
+    #
+    # args = ['--no-osd', '--no-keys', '-b']
+    # create_player("dummy.mp4", args)
 
     @classmethod
     def all_not_playing(cls):
@@ -127,6 +141,41 @@ class BobUecker(object):
             db.session.commit()
 
         return ''
+
+    @classmethod
+    def play_single(cls, video_id):
+        movie = Movie.query.get(video_id)
+
+        BobUecker.all_not_playing()
+        full_file_path = movie.location
+        # command = single_play_command + full_file_path
+        # BobUecker.stop_video()
+        # process = subprocess.Popen([command],
+        #                            shell=True,
+        #                            stdin=None,
+        #                            stdout=None,
+        #                            stderr=None,
+        #                            close_fds=True)
+        # message = process.poll()
+        # process_pid = process.pid
+
+        ################################################################################################
+        # Debug, trying to locate D-bus
+        player = OMXPlayer(full_file_path, args=['--no-osd', '--no-keys', '-b'])
+        print("Filename is {} ".format(player.get_filename()))
+        # session["the_omxplayer"] = temp_omxplayer
+
+        ################################################################################################
+        #
+        # if process_pid and not message:
+        #     # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
+        #     movie.currently_playing = True
+        #     db.session.commit()
+        player.play()
+        sleep(15)
+        # player.pause()
+
+        return player
 
     @classmethod
     def loop_video(cls, video_id):

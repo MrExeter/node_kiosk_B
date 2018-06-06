@@ -4,17 +4,15 @@ Description - Kiosk movie create form class
 @date - 10-Apr-2018
 @time - 10:35 AM
 '''
-
+from flask import session
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired
 from werkzeug.utils import secure_filename
-from wtforms import StringField, SubmitField, FileField, SelectField
+from wtforms import StringField, SubmitField, FileField
 # from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
-from flask_admin.form.widgets import Select2Widget
-
 # from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms_alchemy import ModelForm, QuerySelectField, QuerySelectMultipleField
+from wtforms_alchemy import QuerySelectMultipleField
 
 from app.movie.models import Movie, Playlist
 
@@ -37,6 +35,21 @@ def playlist_name_exists(form, field):
     playlist = Playlist.query.filter_by(name=field.data).first()
     if playlist:
         raise ValidationError('Duplicate playlist name already exists')
+
+
+def edit_playlist_name_exists(form, field):
+    temp_name = session["current_playlist_name"]
+    playlist = Playlist.query.filter_by(name=field.data).first()
+    if not playlist:
+        return True
+
+    playlist_name = playlist.name
+    if playlist_name == temp_name:
+        session["current_playlist_name"] = ""
+        return True
+
+    if playlist:
+        raise ValidationError('Playlist name already in use')
 
 
 class CreateMovieForm(FlaskForm):
@@ -66,7 +79,7 @@ class CreatePlaylistForm(FlaskForm):
 
 class EditPlaylistForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),
-                                           playlist_name_exists])
+                                           edit_playlist_name_exists])
 
     movies = QuerySelectMultipleField(u'Videos',
                                       query_factory=lambda: Movie.query.all(),

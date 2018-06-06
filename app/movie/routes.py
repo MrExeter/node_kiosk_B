@@ -8,14 +8,14 @@ Description - Routes for kiosk movie model
 import os
 
 from sqlalchemy.exc import IntegrityError, DatabaseError, DataError
-from flask import render_template, flash, request, redirect, url_for
+from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 
 from app import db, UPLOAD_FOLDER
 from app.movie import main
 from app.movie.forms import CreateMovieForm, CreatePlaylistForm, EditPlaylistForm
-from app.movie.models import Movie, Playlist
+from app.movie.models import Movie, Playlist, movie_playlists
 from app.utils.utils import SystemMonitor, BobUecker
 
 
@@ -28,6 +28,8 @@ def display_movies():
 @login_required
 def movie_list():
     movies = Movie.query.all()
+    # player = session["the_omxplayer"]
+    dummy = 1
     return render_template('movie_list.html', movies=movies)
 
 
@@ -119,31 +121,58 @@ def playlist_detail(playlist_id):
 @login_required
 def edit_playlist(playlist_id):
     playlist = Playlist.query.get(playlist_id)
+    session["current_playlist_name"] = playlist.name    # Save playlist name prior to editing
+
+    # videos = []
+    # for video in playlist.playlists:
+    #     videos.append(video)
+
     form = EditPlaylistForm(obj=playlist)
+    if request.method == 'GET':
+        form.movies.data = [movie for movie in playlist.playlists.all()]
+    # form.sectors.choices = [(g.id, g.name_srb) for g in Sector.query.order_by('name')]
 
     if form.validate_on_submit():
         # kiosk.network_address = form.network_address.data
         # kiosk.location = form.location.data
         playlist.name = form.name.data
-        playlist.movies = form.movies.data
-
+        movies = form.movies.data
+        playlist.movies = movies
+        dummy = 1
         try:
-            db.session.add(playlist)
+            dummy2 = 1
+            # db.session.add(playlist)
+            db.session.delete(playlist)
+            db.session.commit()
+            Playlist.create_playlist(form.name.data, form.movies.data)
+            flash('Playlist Creation Successful')
+            # # db.session.flush()
+            # for movie in movies:
+            #     playlist.playlists.extend(movie)
+
+
+            # db.session.commit()
             db.session.commit()
             flash('Playlist updated successfully')
             return redirect(url_for('main.playlist_list'))
 
         except IntegrityError:
             db.session.rollback()
+            flash('Database Integrity Error encountered')
             print("Database Integrity Error encountered")
 
         except DataError:
             db.session.rollback()
+            flash('Data Error encountered')
             print("Data Error encountered")
 
         except DatabaseError:
             db.session.rollback()
+            flash('Database Error encountered')
             print("Database Error encountered")
+
+        flash('Playlist Creation Successful')
+        return redirect(url_for('main.playlist_list'))
 
     return render_template('edit_playlist.html', form=form)
 
@@ -168,6 +197,16 @@ def delete_playlist(playlist_id):
 def get_system_stats():
     system_monitor = SystemMonitor()
     return system_monitor.get_system_stats()
+
+
+@main.route('/play_video_once/')
+def play_video_once():
+
+    movie_id = request.args.get('movie_id')
+    player = BobUecker.play_single(movie_id)
+    session["the_omxplayer"] = player
+    dummy = 1
+    return ''
 
 
 @main.route('/loop_video/')

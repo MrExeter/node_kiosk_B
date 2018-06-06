@@ -6,7 +6,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 # from flask_wtf.csrf import CSRFProtect
-
+# from omxplayer.player import OMXPlayer
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -45,5 +45,8 @@ def create_app(config_type):
 
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER     # set upload directory for videos
 
+    # global g_player
+    # args = ['--no-osd', '--no-keys', '-b']
+    # g_player = OMXPlayer("dummy.mp4", args)
 
     return app
