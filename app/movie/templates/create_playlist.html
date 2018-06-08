@@ -1,4 +1,6 @@
 {% extends 'layout.html' %}
+{#<script type=text/javascript src="{{ url_for('static', filename='js/jquery.js') }}"></script>#}
+{#<script type=text/javascript src="{{ url_for('static', filename='js/jquery.min-ui.js') }}"></script>#}
 
 {% block content %}
 
@@ -11,6 +13,7 @@
             {{ form.hidden_tag() }}
             {{ wtf.quick_form(form) }}
 
+
 {#        {% else %}#}
 {##}
 {#            <p>-- You must add movies before you create a playlist --</p>#}
@@ -21,3 +24,4 @@
     </div>
 
 {% endblock %}
+

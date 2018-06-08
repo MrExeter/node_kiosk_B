@@ -10,13 +10,9 @@ from app import db
 from sqlalchemy.exc import IntegrityError, DatabaseError, DataError
 
 movie_playlists = db.Table('movie_playlists',
-                           db.Column('movie_id', db.Integer, db.ForeignKey('movie.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
-                           db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+                           db.Column('movie_id', db.Integer, db.ForeignKey('movie.id'), primary_key=True),
+                           db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True)
                            )
-# movie_playlists = db.Table('movie_playlists',
-#                            db.Column('movie_id', db.Integer, db.ForeignKey('movie.id')),
-#                            db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'))
-#                            )
 
 
 class Movie(db.Model):
@@ -29,8 +25,8 @@ class Movie(db.Model):
     location = db.Column(db.String(128), nullable=False)
     play_count = db.Column(db.Integer)
     currently_playing = db.Column(db.Boolean, nullable=False)
-    movieplaylist = db.relationship('Playlist', secondary=movie_playlists,
-                                    backref=db.backref('playlists', lazy='dynamic'))
+    movieplaylist = db.relationship('Playlist', secondary=movie_playlists, lazy='subquery',
+                                    backref=db.backref('movies', lazy=True))
 
     @classmethod
     def create_movie(cls, name, file_name, location):
@@ -68,10 +64,8 @@ class Playlist(db.Model):
         playlist = cls(name)
         try:
             db.session.add(playlist)
-            # db.session.commit()
             for movie in movies:
-                playlist.playlists.extend(movie)
-
+                playlist.movies.extend(movie)
             db.session.commit()
 
         except IntegrityError:
@@ -85,33 +79,6 @@ class Playlist(db.Model):
         except DatabaseError:
             db.session.rollback()
             print("Database Error encountered")
-
-    # @classmethod
-    # def update_playlist(cls, name, *movies):
-    #     playlist = cls(name)
-    #     try:
-    #         db.session.add(playlist.name)
-    #         db.session.commit()
-    #
-    #         # clear existing relationships
-    #         movie_playlists.query().filter_by(playlist.id).delete()
-    #
-    #         for movie in movies:
-    #             playlist.playlists.extend(movie)
-    #
-    #         db.session.commit()
-    #
-    #     except IntegrityError:
-    #         db.session.rollback()
-    #         print("Database Integrity Error encountered")
-    #
-    #     except DataError:
-    #         db.session.rollback()
-    #         print("Data Error encountered")
-    #
-    #     except DatabaseError:
-    #         db.session.rollback()
-    #         print("Database Error encountered")
 
     def __repr__(self):
         return "Playlist : {}".format(self.name)

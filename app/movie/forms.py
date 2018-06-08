@@ -69,8 +69,7 @@ class CreatePlaylistForm(FlaskForm):
                                            playlist_name_exists])
 
     movies = QuerySelectMultipleField(u'Videos',
-                                      query_factory=lambda: Movie.query.all(),
-                                      allow_blank=True,
+                                      query_factory=lambda: Movie.query.order_by(Movie.name.asc()).all(),
                                       blank_text=u'',
                                       get_label='name')
 
@@ -82,8 +81,7 @@ class EditPlaylistForm(FlaskForm):
                                            edit_playlist_name_exists])
 
     movies = QuerySelectMultipleField(u'Videos',
-                                      query_factory=lambda: Movie.query.all(),
-                                      allow_blank=True,
+                                      query_factory=lambda: Movie.query.order_by(Movie.name.asc()).all(),
                                       blank_text=u'',
                                       get_label='name')
 

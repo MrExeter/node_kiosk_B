@@ -7,10 +7,14 @@
         <head>
             <meta charset="UTF-8">
             <title>USS Iowa Video Kiosk</title>
+            <link rel="stylesheet" href="{{ url_for('static', filename = 'css/styles.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename = 'css/jquery-ui.css') }}">
+            <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery-3.3.1.min.js') }}"></script>
+            <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery-ui.min.js') }}"></script>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
             <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-            <link rel="stylesheet" href="{{ url_for('static', filename = 'css/styles.css') }}">
+
         </head>
     {% endblock %}
 
@@ -63,7 +67,7 @@
                 {% endfor %}
 
                 {# empty block for custom content #}
-                {% block content %} {% endblock content %}
+                {% block content %}{% endblock content %}
 
                 {# footer #}
                 {% block footer %}
@@ -76,7 +80,7 @@
                 {% endblock footer %}
 
             </div>
-        <script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>
+
         </body>
     {% endblock body %}
 </html>

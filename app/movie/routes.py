@@ -28,8 +28,6 @@ def display_movies():
 @login_required
 def movie_list():
     movies = Movie.query.all()
-    # player = session["the_omxplayer"]
-    dummy = 1
     return render_template('movie_list.html', movies=movies)
 
 
@@ -70,7 +68,6 @@ def create_movie():
     form = CreateMovieForm()
 
     if form.validate_on_submit():
-        # f = request.files['file']
         f = form.video.data
         filename = secure_filename(f.filename)
         f.save(os.path.join(UPLOAD_FOLDER, filename))
@@ -112,7 +109,7 @@ def create_playlist():
 def playlist_detail(playlist_id):
     playlist = Playlist.query.get(playlist_id)
     movies = []
-    for movie in playlist.playlists:
+    for movie in playlist.movies:
         movies.append(movie)
     return render_template('playlist_detail.html', playlist=playlist, movies=movies)
 
@@ -123,35 +120,17 @@ def edit_playlist(playlist_id):
     playlist = Playlist.query.get(playlist_id)
     session["current_playlist_name"] = playlist.name    # Save playlist name prior to editing
 
-    # videos = []
-    # for video in playlist.playlists:
-    #     videos.append(video)
-
     form = EditPlaylistForm(obj=playlist)
     if request.method == 'GET':
-        form.movies.data = [movie for movie in playlist.playlists.all()]
-    # form.sectors.choices = [(g.id, g.name_srb) for g in Sector.query.order_by('name')]
+        form.movies.data = [movie for movie in playlist.movies]
 
     if form.validate_on_submit():
-        # kiosk.network_address = form.network_address.data
-        # kiosk.location = form.location.data
+
         playlist.name = form.name.data
         movies = form.movies.data
         playlist.movies = movies
-        dummy = 1
+
         try:
-            dummy2 = 1
-            # db.session.add(playlist)
-            db.session.delete(playlist)
-            db.session.commit()
-            Playlist.create_playlist(form.name.data, form.movies.data)
-            flash('Playlist Creation Successful')
-            # # db.session.flush()
-            # for movie in movies:
-            #     playlist.playlists.extend(movie)
-
-
-            # db.session.commit()
             db.session.commit()
             flash('Playlist updated successfully')
             return redirect(url_for('main.playlist_list'))
@@ -205,7 +184,6 @@ def play_video_once():
     movie_id = request.args.get('movie_id')
     player = BobUecker.play_single(movie_id)
     session["the_omxplayer"] = player
-    dummy = 1
     return ''
 
 
