@@ -7,7 +7,6 @@ Description - Routes for kiosk movie model
 
 import os
 
-from sqlalchemy.exc import IntegrityError, DatabaseError, DataError
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 from werkzeug.utils import secure_filename
@@ -15,7 +14,8 @@ from werkzeug.utils import secure_filename
 from app import db, UPLOAD_FOLDER
 from app.movie import main
 from app.movie.forms import CreateMovieForm, CreatePlaylistForm, EditPlaylistForm
-from app.movie.models import Movie, Playlist, movie_playlists
+from app.movie.models import Movie, Playlist
+from app.utils.link_controller import LinkController
 from app.utils.utils import SystemMonitor, BobUecker
 
 
@@ -77,7 +77,6 @@ def create_movie():
             file_name=filename,
             location=os.path.join(UPLOAD_FOLDER, filename)
         )
-        flash('Movie Created Successful')
         return redirect(url_for('main.movie_list'))
 
     return render_template('create_movie.html', form=form)
@@ -98,7 +97,6 @@ def create_playlist():
     if form.validate_on_submit():
 
         Playlist.create_playlist(form.name.data, form.movies.data)
-        flash('Playlist Creation Successful')
         return redirect(url_for('main.playlist_list'))
 
     return render_template('create_playlist.html', form=form)
@@ -107,10 +105,14 @@ def create_playlist():
 @main.route('/playlist/detail/<playlist_id>')
 @login_required
 def playlist_detail(playlist_id):
+
     playlist = Playlist.query.get(playlist_id)
+    links = playlist.links
     movies = []
-    for movie in playlist.movies:
+    for link in links:
+        movie = Movie.query.get(link.movie_id)
         movies.append(movie)
+
     return render_template('playlist_detail.html', playlist=playlist, movies=movies)
 
 
@@ -120,37 +122,20 @@ def edit_playlist(playlist_id):
     playlist = Playlist.query.get(playlist_id)
     session["current_playlist_name"] = playlist.name    # Save playlist name prior to editing
 
+    links = playlist.links
+
     form = EditPlaylistForm(obj=playlist)
     if request.method == 'GET':
-        form.movies.data = [movie for movie in playlist.movies]
+        if playlist.links:
+            # if there are links, then retrieve the movies that they link to
+            links = playlist.links
+            movies = [Movie.query.get(link.movie_id) for link in links]
+            form.movies.data = [movie for movie in movies]
 
     if form.validate_on_submit():
+        # Update name and movie list of playlist
+        playlist.update_playlist(form.name.data, form.movies.data)
 
-        playlist.name = form.name.data
-        movies = form.movies.data
-        playlist.movies = movies
-
-        try:
-            db.session.commit()
-            flash('Playlist updated successfully')
-            return redirect(url_for('main.playlist_list'))
-
-        except IntegrityError:
-            db.session.rollback()
-            flash('Database Integrity Error encountered')
-            print("Database Integrity Error encountered")
-
-        except DataError:
-            db.session.rollback()
-            flash('Data Error encountered')
-            print("Data Error encountered")
-
-        except DatabaseError:
-            db.session.rollback()
-            flash('Database Error encountered')
-            print("Database Error encountered")
-
-        flash('Playlist Creation Successful')
         return redirect(url_for('main.playlist_list'))
 
     return render_template('edit_playlist.html', form=form)
@@ -160,11 +145,14 @@ def edit_playlist(playlist_id):
 @login_required
 def delete_playlist(playlist_id):
     playlist = Playlist.query.get(playlist_id)
-
+    directory_name = playlist.directory_name
     if request.method == 'POST':
 
         db.session.delete(playlist)
         db.session.commit()
+        linkcontroller = LinkController()
+        linkcontroller.delete_links(directory_name)
+        linkcontroller.delete_playlist_directory(directory_name)
         flash('Playlist deleted successfully')
         return redirect(url_for('main.playlist_list'))
 

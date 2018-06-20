@@ -7,14 +7,12 @@ Description - System monitor utilities
 
 import os
 import subprocess
-
 # System monitor using psutil
 #
 from time import sleep
 
-import omxplayer
 import psutil
-from flask import jsonify, session
+from flask import jsonify
 from omxplayer.player import OMXPlayer
 
 from app import db
@@ -208,5 +206,3 @@ class BobUecker(object):
     def stop_video(cls):
         os.system(kill_command)
         return None
-
-

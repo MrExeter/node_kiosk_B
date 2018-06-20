@@ -77,6 +77,7 @@ class CreatePlaylistForm(FlaskForm):
 
 
 class EditPlaylistForm(FlaskForm):
+    # name = StringField('Name', render_kw={'readonly': True})
     name = StringField('Name', validators=[DataRequired(),
                                            edit_playlist_name_exists])
 
