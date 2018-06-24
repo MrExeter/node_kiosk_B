@@ -16,7 +16,7 @@ from flask import jsonify
 from omxplayer.player import OMXPlayer
 
 from app import db
-from app.movie.models import Movie
+from app.movie.models import Movie, Playlist
 
 
 class SystemMonitor:
@@ -92,9 +92,23 @@ class SystemMonitor:
             movie_data["file"] = movie.file_name
             movie_data["play_count"] = movie.play_count
             movie_data["currently_playing"] = str(movie.currently_playing)
+            movie_data["play_on_start"] = str(movie.play_on_start)
             movie_output.append(movie_data)
 
         movie_output = sorted(movie_output, key=lambda i: i['id'], reverse=False)
+
+        playlist_output = []
+        playlists = Playlist.query.all()
+        for playlist in playlists:
+            playlist_data = {}
+            playlist_data["id"] = playlist.id
+            playlist_data["name"] = playlist.name
+            playlist_data["directory_path"] = playlist.directory_path
+            playlist_data["currently_playing"] = str(playlist.currently_playing)
+            playlist_data["play_on_start"] = str(playlist.play_on_start)
+            playlist_output.append(playlist_data)
+
+        playlist_output = sorted(playlist_output, key=lambda i: i['id'], reverse=False)
 
         self.json_data = {
             "system": {
@@ -104,7 +118,8 @@ class SystemMonitor:
                 "disk_stats": disk_stats,
                 "uptime": uptime_stats},
 
-            "movie_data": movie_output
+            "movie_data": movie_output,
+            "playlist_data": playlist_output
         }
 
     def __repr__(self):
@@ -114,7 +129,7 @@ class SystemMonitor:
         return jsonify(self.json_data)
 
 
-kill_command = 'sudo killall omxplayer.bin'
+kill_command_single_video = 'sudo killall omxplayer.bin'
 loop_command = 'omxplayer --no-osd -o local --loop --aspect-mode stretch '
 single_play_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
 
@@ -123,21 +138,21 @@ playlist_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
 
 class BobUecker(object):
 
-    # def create_player(movie, args):
-    #     global g_player
-    #     g_player = OMXPlayer(movie, args)
-    #
-    # args = ['--no-osd', '--no-keys', '-b']
-    # create_player("dummy.mp4", args)
+    # Class variable to store PID of playlist looping script
+    PLAYLIST_PID = None
 
     @classmethod
     def all_not_playing(cls):
+        # Set all movies and playlists to not currently playing
         movies = Movie.query.all()
         for movie in movies:
-            # Set all movies to not currently playing
             movie.currently_playing = False
-            db.session.commit()
 
+        playlists = Playlist.query.all()
+        for playlist in playlists:
+            playlist.currently_playing = False
+
+        db.session.commit()
         return ''
 
     @classmethod
@@ -184,7 +199,8 @@ class BobUecker(object):
 
         full_file_path = movie.location
         command = loop_command + full_file_path
-        # os.system(kill_command)
+        # os.system(kill_command_single_video)
+        BobUecker.stop_playlist()
         BobUecker.stop_video()
         process = subprocess.Popen([command],
                                    shell=True,
@@ -195,14 +211,52 @@ class BobUecker(object):
         message = process.poll()
         process_pid = process.pid
 
-        if process_pid and not message:
-            # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
-            movie.currently_playing = True
-            db.session.commit()
+        # if process_pid and not message:
+        #     # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
+        movie.currently_playing = True
+        db.session.commit()
 
         return None
 
     @classmethod
+    def loop_playlist(cls, playlist_id):
+        playlist = Playlist.query.get(playlist_id)
+        directory_path = " " + playlist.directory_path
+
+        BobUecker.all_not_playing()
+        BobUecker.stop_playlist()
+        BobUecker.stop_video()
+
+        cmd = "/home/pi/node_kiosk_B/app/utils/playlist_looper.sh" + directory_path
+        # cmd = "/home/pi/node_kiosk_B/app/utils/tester.sh" + directory_path
+
+        process = subprocess.Popen(['/bin/bash', '-c', cmd])
+        # process = subprocess.Popen([cmd],
+        #                            shell=True,
+        #                            stdin=None,
+        #                            stdout=None,
+        #                            stderr=None,
+        #                            close_fds=True)
+        message = process.poll()
+        BobUecker.PLAYLIST_PID = process.pid
+        output_str = "The process pid is : {}".format(BobUecker.PLAYLIST_PID)
+
+        playlist.currently_playing = True
+        db.session.commit()
+
+        print(output_str)
+        return output_str
+
+    @classmethod
+    def stop_playlist(cls):
+        # Use PID to stop playlist script, then stop_video to terminate the video that is left playing
+        if BobUecker.PLAYLIST_PID:
+            kill_command_playlist = "sudo kill -SIGTERM " + str(BobUecker.PLAYLIST_PID)
+            os.system(kill_command_playlist)
+            os.system(kill_command_single_video)
+        return None
+
+    @classmethod
     def stop_video(cls):
-        os.system(kill_command)
+        os.system(kill_command_single_video)
         return None

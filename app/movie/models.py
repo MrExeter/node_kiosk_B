@@ -25,7 +25,8 @@ class Movie(db.Model):
     file_name = db.Column(db.String(64), nullable=False)
     location = db.Column(db.String(128), nullable=False)
     play_count = db.Column(db.Integer)
-    currently_playing = db.Column(db.Boolean, nullable=False)
+    currently_playing = db.Column(db.Boolean, nullable=False, default=False)
+    play_on_start = db.Column(db.Boolean, nullable=False, default=False)
     links = db.relationship('VideoLink',
                             foreign_keys="[VideoLink.movie_id, VideoLink.full_filepath]",
                             cascade="all",
@@ -118,11 +119,27 @@ class Playlist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True)
+    directory_path = db.Column(db.String(128))
     directory_name = db.Column(db.String(64))
+    currently_playing = db.Column(db.Boolean, nullable=False, default=False)
+    play_on_start = db.Column(db.Boolean, nullable=False, default=False)
 
     def __init__(self, name):
         self.name = name
         self.directory_name = self.name.replace(" ", "")
+
+    def get_directory_name(self):
+        return self.directory_name
+
+    def set_name(self, name):
+        self.name = name
+        self.directory_name = self.name.replace(" ", "")
+
+    def set_directory_path(self, directory_path):
+        self.directory_path = directory_path
+
+    def get_directory_path(self):
+        return self.directory_path
 
     @classmethod
     def get_playlist_path(cls, playlist_name):
@@ -135,6 +152,7 @@ class Playlist(db.Model):
 
         # Root of all playlist directories
         playlist_root_directory = PLAYLIST_ROOT + directory + "/"
+        playlist.set_directory_path(playlist_root_directory)
 
         # List that will be used to pass tuples of (movie, link)
         movie_link_pairs = []
@@ -193,8 +211,8 @@ class Playlist(db.Model):
 
     def update_playlist(self, new_name, *new_movies):
 
-        directory = new_name.replace(" ", "")
-        playlist_root_directory = PLAYLIST_ROOT + directory + "/"
+        # directory = new_name.replace(" ", "")
+        # playlist_root_directory = PLAYLIST_ROOT + directory + "/"
 
         # list of tuples (movie, link)
         movie_link_pairs = []
@@ -204,8 +222,8 @@ class Playlist(db.Model):
                 # Name Change!
                 # Complete change, playlist name changes, create new playlist directory and populate with links
                 old_name = self.name
-                self.name = new_name
-                self.directory_name = directory
+                old_directory_name = self.directory_name
+                self.set_name(new_name)
                 db.session.commit()
 
                 # Retrieve old links for deletion
@@ -215,6 +233,9 @@ class Playlist(db.Model):
                     db.session.commit()
 
                 linkz = []
+
+                playlist_root_directory = PLAYLIST_ROOT + self.directory_name + "/"
+                self.set_directory_path(playlist_root_directory)
 
                 new_movies = new_movies[0]  # convert tuple to list
                 for movie in new_movies:
@@ -233,13 +254,13 @@ class Playlist(db.Model):
 
                 # Delete old links and old playlist directory
                 delete_linkcontroller = LinkController()
-                delete_linkcontroller.delete_links(old_name)
-                delete_linkcontroller.delete_playlist_directory(old_name)
+                delete_linkcontroller.delete_links(old_directory_name)
+                delete_linkcontroller.delete_playlist_directory(old_directory_name)
 
                 # Create new playlist directory and populate with new links
                 create_linkcontroller = LinkController()
                 create_linkcontroller.create_playlist_directory(playlist_root_directory)
-                create_linkcontroller.create_links(directory, *movie_link_pairs)
+                create_linkcontroller.create_links(self.directory_name, *movie_link_pairs)
 
                 flash('Playlist Updated Successful')
 
@@ -251,6 +272,9 @@ class Playlist(db.Model):
                     db.session.commit()
 
                 linkz = []
+
+                playlist_root_directory = PLAYLIST_ROOT + self.directory_name + "/"
+
                 new_movies = new_movies[0]  # convert tuple to list
                 for movie in new_movies:
                     link_path = playlist_root_directory + str(new_movies.index(movie)) + ".mp4"
@@ -268,8 +292,8 @@ class Playlist(db.Model):
 
                 # Delete old links and create new links disk
                 update_linkcontroller = LinkController()
-                update_linkcontroller.delete_links(self.name)
-                update_linkcontroller.create_links(self.name)
+                update_linkcontroller.delete_links(self.directory_name)
+                update_linkcontroller.create_links(self.directory_name, *movie_link_pairs)
 
                 flash('Playlist Updated Successful')
 

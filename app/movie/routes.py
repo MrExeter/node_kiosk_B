@@ -192,3 +192,22 @@ def stop_loop_video():
     BobUecker.all_not_playing()
     BobUecker.stop_video()
     return ''
+
+
+@main.route('/loop_playlist/')
+def loop_playlist():
+    playlist_id = request.args.get('playlist_id')
+    BobUecker.loop_playlist(playlist_id)
+
+
+@main.route('/stop_loop_playlist/')
+def stop_loop_playlist():
+    # execute -- ps ax | grep playlist_looper.sh
+    # this will yield a PID code
+    #
+    # then execute kill -SIGTERM <PID>; sudo killall omxplayer.bin;
+    BobUecker.all_not_playing()
+    BobUecker.stop_playlist()
+    BobUecker.stop_video()
+
+
