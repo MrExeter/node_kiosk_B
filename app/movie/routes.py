@@ -166,13 +166,20 @@ def get_system_stats():
     return system_monitor.get_system_stats()
 
 
-@main.route('/play_video_once/')
-def play_video_once():
-
-    movie_id = request.args.get('movie_id')
-    player = BobUecker.play_single(movie_id)
-    session["the_omxplayer"] = player
-    return ''
+@main.route('/receive_scheduler', methods=['GET', 'POST'])
+def receive_scheduler():
+    schedule_data = request.get_json()
+    if schedule_data == '' or schedule_data is None:
+        return "False"
+    else:
+        return "True"
+# @main.route('/play_video_once/')
+# def play_video_once():
+#
+#     movie_id = request.args.get('movie_id')
+#     player = BobUecker.play_single(movie_id)
+#     session["the_omxplayer"] = player
+#     return ''
 
 
 @main.route('/loop_video/')
@@ -202,12 +209,5 @@ def loop_playlist():
 
 @main.route('/stop_loop_playlist/')
 def stop_loop_playlist():
-    # execute -- ps ax | grep playlist_looper.sh
-    # this will yield a PID code
-    #
-    # then execute kill -SIGTERM <PID>; sudo killall omxplayer.bin;
     BobUecker.all_not_playing()
-    BobUecker.stop_playlist()
     BobUecker.stop_video()
-
-

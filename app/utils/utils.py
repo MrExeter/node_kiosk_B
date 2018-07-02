@@ -139,7 +139,7 @@ playlist_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
 class BobUecker(object):
 
     # Class variable to store PID of playlist looping script
-    PLAYLIST_PID = None
+    PLAYSCRIPT_PID = None
 
     @classmethod
     def all_not_playing(cls):
@@ -155,40 +155,40 @@ class BobUecker(object):
         db.session.commit()
         return ''
 
-    @classmethod
-    def play_single(cls, video_id):
-        movie = Movie.query.get(video_id)
-
-        BobUecker.all_not_playing()
-        full_file_path = movie.location
-        # command = single_play_command + full_file_path
-        # BobUecker.stop_video()
-        # process = subprocess.Popen([command],
-        #                            shell=True,
-        #                            stdin=None,
-        #                            stdout=None,
-        #                            stderr=None,
-        #                            close_fds=True)
-        # message = process.poll()
-        # process_pid = process.pid
-
-        ################################################################################################
-        # Debug, trying to locate D-bus
-        player = OMXPlayer(full_file_path, args=['--no-osd', '--no-keys', '-b'])
-        print("Filename is {} ".format(player.get_filename()))
-        # session["the_omxplayer"] = temp_omxplayer
-
-        ################################################################################################
-        #
-        # if process_pid and not message:
-        #     # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
-        #     movie.currently_playing = True
-        #     db.session.commit()
-        player.play()
-        sleep(15)
-        # player.pause()
-
-        return player
+    # @classmethod
+    # def play_single(cls, video_id):
+    #     movie = Movie.query.get(video_id)
+    #
+    #     BobUecker.all_not_playing()
+    #     full_file_path = movie.location
+    #     # command = single_play_command + full_file_path
+    #     # BobUecker.stop_video()
+    #     # process = subprocess.Popen([command],
+    #     #                            shell=True,
+    #     #                            stdin=None,
+    #     #                            stdout=None,
+    #     #                            stderr=None,
+    #     #                            close_fds=True)
+    #     # message = process.poll()
+    #     # process_pid = process.pid
+    #
+    #     ################################################################################################
+    #     # Debug, trying to locate D-bus
+    #     player = OMXPlayer(full_file_path, args=['--no-osd', '--no-keys', '-b', '--vol -600'])
+    #     print("Filename is {} ".format(player.get_filename()))
+    #     # session["the_omxplayer"] = temp_omxplayer
+    #
+    #     ################################################################################################
+    #     #
+    #     # if process_pid and not message:
+    #     #     # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
+    #     #     movie.currently_playing = True
+    #     #     db.session.commit()
+    #     player.play()
+    #     sleep(15)
+    #     # player.pause()
+    #
+    #     return player
 
     @classmethod
     def loop_video(cls, video_id):
@@ -202,17 +202,16 @@ class BobUecker(object):
         # os.system(kill_command_single_video)
         BobUecker.stop_playlist()
         BobUecker.stop_video()
-        process = subprocess.Popen([command],
-                                   shell=True,
-                                   stdin=None,
-                                   stdout=None,
-                                   stderr=None,
-                                   close_fds=True)
-        message = process.poll()
-        process_pid = process.pid
 
-        # if process_pid and not message:
-        #     # if subprocess has a pid and no return code, assume subprocess launched and set movie to playing
+        cmd = "/home/pi/node_kiosk_B/app/utils/video_looper.sh" + " " + full_file_path
+        # cmd = "/home/pi/node_kiosk_B/app/utils/tester.sh" + directory_path
+
+        process = subprocess.Popen(['/bin/bash', '-c', cmd])
+
+        message = process.poll()
+        BobUecker.PLAYSCRIPT_PID = process.pid
+        output_str = "The process pid is : {}".format(BobUecker.PLAYSCRIPT_PID)
+
         movie.currently_playing = True
         db.session.commit()
 
@@ -231,15 +230,10 @@ class BobUecker(object):
         # cmd = "/home/pi/node_kiosk_B/app/utils/tester.sh" + directory_path
 
         process = subprocess.Popen(['/bin/bash', '-c', cmd])
-        # process = subprocess.Popen([cmd],
-        #                            shell=True,
-        #                            stdin=None,
-        #                            stdout=None,
-        #                            stderr=None,
-        #                            close_fds=True)
+
         message = process.poll()
-        BobUecker.PLAYLIST_PID = process.pid
-        output_str = "The process pid is : {}".format(BobUecker.PLAYLIST_PID)
+        BobUecker.PLAYSCRIPT_PID = process.pid
+        output_str = "The process pid is : {}".format(BobUecker.PLAYSCRIPT_PID)
 
         playlist.currently_playing = True
         db.session.commit()
@@ -250,13 +244,28 @@ class BobUecker(object):
     @classmethod
     def stop_playlist(cls):
         # Use PID to stop playlist script, then stop_video to terminate the video that is left playing
-        if BobUecker.PLAYLIST_PID:
-            kill_command_playlist = "sudo kill -SIGTERM " + str(BobUecker.PLAYLIST_PID)
+        if BobUecker.PLAYSCRIPT_PID:
+            kill_command_playlist = "sudo kill -SIGTERM " + str(BobUecker.PLAYSCRIPT_PID)
             os.system(kill_command_playlist)
             os.system(kill_command_single_video)
         return None
 
     @classmethod
     def stop_video(cls):
+        if BobUecker.PLAYSCRIPT_PID:
+            kill_command_playlist = "sudo kill -SIGTERM " + str(BobUecker.PLAYSCRIPT_PID)
+            os.system(kill_command_playlist)
         os.system(kill_command_single_video)
         return None
+
+    DISPLAY_WAKE_COMMAND = 'echo on 0 | cec-client -s -d 1'
+    DISPLAY_STANDBY_COMMAND = 'echo standby 0 | cec-client -s -d 1'
+
+    @classmethod
+    def wake_display(cls):
+        os.system(BobUecker.DISPLAY_WAKE_COMMAND)
+
+    @classmethod
+    def sleep_display(cls):
+        BobUecker.stop_video()
+        os.system(BobUecker.DISPLAY_STANDBY_COMMAND)
