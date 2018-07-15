@@ -7,16 +7,13 @@ Description - System monitor utilities
 
 import os
 import subprocess
-# System monitor using psutil
-#
-from time import sleep
 
 import psutil
 from flask import jsonify
-from omxplayer.player import OMXPlayer
 
 from app import db
 from app.movie.models import Movie, Playlist
+from app.utils.utils2 import DisplayMonitor
 
 
 class SystemMonitor:
@@ -119,7 +116,8 @@ class SystemMonitor:
                 "uptime": uptime_stats},
 
             "movie_data": movie_output,
-            "playlist_data": playlist_output
+            "playlist_data": playlist_output,
+            "display_status": self.get_tv_status()
         }
 
     def __repr__(self):
@@ -127,6 +125,37 @@ class SystemMonitor:
 
     def get_system_stats(self):
         return jsonify(self.json_data)
+
+    def get_tv_status(self):
+        return SystemMonitor.get_display_status()
+
+    @classmethod
+    def get_display_status(cls):
+        """ Read status text file that has one of three possible states
+            On -- Monitor connected and turned on
+            Standby -- Monitor connected but in standby
+            ERROR -- Monitor error state, The HDMI cable likely not connected or damaged
+        """
+        file = "/home/pi/node_kiosk_B/app/utils/display_status.txt"
+        lines = tuple(open(file, 'r'))      # Open display status file
+        lines = ''.join(lines).rstrip()     # Convert to string and strip newline character
+
+        if lines == 'On':
+            return 'On'
+        elif lines == 'Standby':
+            return 'Standby'
+        else:
+            return 'ERROR'
+
+    @classmethod
+    def start_display_monitor(cls):
+        """
+            Launch bash script that continuously monitors the state of the display monitor, the script
+            writes and updates to the display_status.txt file
+        """
+        cmd = "/home/pi/node_kiosk_B/app/utils/display_status.sh"
+        process = subprocess.Popen(['/bin/bash', '-c', cmd])
+        return process.pid
 
 
 kill_command_single_video = 'sudo killall omxplayer.bin'
@@ -199,12 +228,10 @@ class BobUecker(object):
 
         full_file_path = movie.location
         command = loop_command + full_file_path
-        # os.system(kill_command_single_video)
         BobUecker.stop_playlist()
         BobUecker.stop_video()
 
         cmd = "/home/pi/node_kiosk_B/app/utils/video_looper.sh" + " " + full_file_path
-        # cmd = "/home/pi/node_kiosk_B/app/utils/tester.sh" + directory_path
 
         process = subprocess.Popen(['/bin/bash', '-c', cmd])
 
@@ -227,7 +254,6 @@ class BobUecker(object):
         BobUecker.stop_video()
 
         cmd = "/home/pi/node_kiosk_B/app/utils/playlist_looper.sh" + directory_path
-        # cmd = "/home/pi/node_kiosk_B/app/utils/tester.sh" + directory_path
 
         process = subprocess.Popen(['/bin/bash', '-c', cmd])
 
@@ -267,5 +293,7 @@ class BobUecker(object):
 
     @classmethod
     def sleep_display(cls):
+        BobUecker.all_not_playing()
+        BobUecker.stop_playlist()
         BobUecker.stop_video()
         os.system(BobUecker.DISPLAY_STANDBY_COMMAND)
