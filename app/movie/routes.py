@@ -216,13 +216,10 @@ def stop_loop_playlist():
 @main.route('/sleep_kiosk_display/')
 def sleep_kiosk_display():
     BobUecker.sleep_display()
+    return ''
 
 
 @main.route('/wake_kiosk_display/')
 def wake_kiosk_display():
     BobUecker.wake_display()
-
-
-@main.route('/kiosk_display_status/')
-def kiosk_display_status():
-    return BobUecker.get_display_status()
+    return ''

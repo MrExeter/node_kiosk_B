@@ -13,7 +13,6 @@ from flask import jsonify
 
 from app import db
 from app.movie.models import Movie, Playlist
-from app.utils.utils2 import DisplayMonitor
 
 
 class SystemMonitor:
@@ -286,14 +285,54 @@ class BobUecker(object):
 
     DISPLAY_WAKE_COMMAND = 'echo on 0 | cec-client -s -d 1'
     DISPLAY_STANDBY_COMMAND = 'echo standby 0 | cec-client -s -d 1'
+    POWER_OFF_COMMAND = 'tvservice -o'
 
     @classmethod
     def wake_display(cls):
-        os.system(BobUecker.DISPLAY_WAKE_COMMAND)
+        # os.system(BobUecker.DISPLAY_WAKE_COMMAND)
+        process2 = subprocess.Popen([BobUecker.POWER_OFF_COMMAND],
+                                    shell=True,
+                                    stdin=None,
+                                    stdout=None,
+                                    stderr=None,
+                                    close_fds=True)
+
+        message2 = process2.poll()
+        process_pid2 = process2.pid
+
+        process = subprocess.Popen([BobUecker.DISPLAY_WAKE_COMMAND],
+                                   shell=True,
+                                   stdin=None,
+                                   stdout=None,
+                                   stderr=None,
+                                   close_fds=True)
+        message = process.poll()
+        process_pid = process.pid
 
     @classmethod
     def sleep_display(cls):
         BobUecker.all_not_playing()
         BobUecker.stop_playlist()
         BobUecker.stop_video()
-        os.system(BobUecker.DISPLAY_STANDBY_COMMAND)
+
+        process2 = subprocess.Popen([BobUecker.POWER_OFF_COMMAND],
+                                    shell=True,
+                                    stdin=None,
+                                    stdout=None,
+                                    stderr=None,
+                                    close_fds=True)
+
+        message2 = process2.poll()
+        process_pid2 = process2.pid
+
+        process = subprocess.Popen([BobUecker.DISPLAY_STANDBY_COMMAND],
+                                   shell=True,
+                                   stdin=None,
+                                   stdout=None,
+                                   stderr=None,
+                                   close_fds=True)
+        message = process.poll()
+        process_pid = process.pid
+
+        # os.system(BobUecker.DISPLAY_STANDBY_COMMAND)
+        # os.system(BobUecker.POWER_OFF_COMMAND)
