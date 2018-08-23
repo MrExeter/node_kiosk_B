@@ -14,5 +14,5 @@ do
         echo "ERROR" > '/home/pi/node_kiosk_B/app/utils/display_status.txt'
     fi
 
-    sleep .10
+    sleep 4
 done
