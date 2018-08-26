@@ -10,8 +10,8 @@
 
         <table class="table table-bordered table-striped table-hover">
             <tr>
-                <td>Playlist Name : </td>
-                <td>{{ playlist.name }}</td>
+                <th>Playlist Name : </th>
+                <th>{{ playlist.name.title() }}</th>
             </tr>
             {% for movie in movies %}
                 <tr>
@@ -24,10 +24,10 @@
         </table>
 
         <a  href={{ url_for('main.playlist_list') }}>
-            <button  class="btn btn-default"  label="Back" name="Back">Back</button>
+            <button  class="btn btn-info"  label="Back" name="Back">Back</button>
         </a>
         <a  href={{ url_for('main.edit_playlist', playlist_id=playlist.id) }}>
-            <button  class="btn btn-info"  label="Edit" name="Edit">Edit</button>
+            <button  class="btn btn-primary"  label="Edit" name="Edit">Edit</button>
         </a>
         <a  href={{ url_for('main.delete_playlist', playlist_id=playlist.id) }}>
             <button  class="btn btn-danger"  label="Delete" name="Delete">Delete</button>

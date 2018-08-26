@@ -4,10 +4,10 @@ echo standby 0 | cec-client -s -d 1
 
 sleep 2s
 
-echo sudo tvservice -o
+echo tvservice -o
 
 sleep 4s
 
 echo standby 0 | cec-client -s -d 1
 
-echo sudo tvservice -o
+echo tvservice -o

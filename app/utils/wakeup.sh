@@ -2,7 +2,7 @@
 #
 echo sudo tvservice -o
 
-sleep 3
+sleep 3.5
 
 echo sudo tvservice -p
 

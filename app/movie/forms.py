@@ -8,7 +8,7 @@ from flask import session
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired
 from werkzeug.utils import secure_filename
-from wtforms import StringField, SubmitField, FileField
+from wtforms import StringField, SubmitField, FileField, BooleanField
 # from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
 # from wtforms_sqlalchemy.fields import QuerySelectField
@@ -73,6 +73,8 @@ class CreatePlaylistForm(FlaskForm):
                                       blank_text=u'',
                                       get_label='name')
 
+    play_on_start = BooleanField('Play on wake')
+
     submit = SubmitField('Create Playlist')
 
 
@@ -85,6 +87,8 @@ class EditPlaylistForm(FlaskForm):
                                       query_factory=lambda: Movie.query.order_by(Movie.name.asc()).all(),
                                       blank_text=u'',
                                       get_label='name')
+
+    play_on_start = BooleanField('Play on wake')
 
     submit = SubmitField('Update Playlist')
 

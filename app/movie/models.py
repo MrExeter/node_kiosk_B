@@ -114,6 +114,17 @@ class VideoLink(db.Model):
 PLAYLIST_ROOT = "/home/pi/node_kiosk_B/app/static/videos/playlists/"
 
 
+def set_playlist_to_play_on_start(id):
+    playlists = Playlist.query.all()
+    for playlist in playlists:
+        if playlist.id != id:
+            playlist.play_on_start = False
+        else:
+            playlist.play_on_start = True
+
+    db.session.commit()
+
+
 class Playlist(db.Model):
     __tablename__ = 'playlist'
 
@@ -124,8 +135,9 @@ class Playlist(db.Model):
     currently_playing = db.Column(db.Boolean, nullable=False, default=False)
     play_on_start = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, name):
+    def __init__(self, name, play_on_start):
         self.name = name
+        self.play_on_start = play_on_start
         self.directory_name = self.name.replace(" ", "")
 
     def get_directory_name(self):
@@ -146,8 +158,9 @@ class Playlist(db.Model):
         return PLAYLIST_ROOT + playlist_name + "/"
 
     @classmethod
-    def create_playlist(cls, name, *movies):
-        playlist = cls(name)
+    def create_playlist(cls, name, play_on_start, *movies):
+        playlist = cls(name, play_on_start)
+
         directory = playlist.directory_name
 
         # Root of all playlist directories
@@ -158,11 +171,18 @@ class Playlist(db.Model):
         movie_link_pairs = []
 
         try:
+            if play_on_start:
+                set_playlist_to_play_on_start(playlist.id)
+
             db.session.add(playlist)
             db.session.commit()
 
             linkz = []
             movies = movies[0]  # convert tuple to list
+            # if no movies than set play on start to False
+            if len(movies) == 0:
+                playlist.play_on_start = False
+
             for movie in movies:
                 link_path = playlist_root_directory + str(movies.index(movie)) + ".mp4"
                 video_link = VideoLink(movie=movie, link_path=link_path)
@@ -173,6 +193,10 @@ class Playlist(db.Model):
                 db.session.add(video_link)
                 db.session.commit()
                 linkz.append(video_link)
+
+            # New playlist is being set to play on start, reset others to False
+            if playlist.play_on_start:
+                set_playlist_to_play_on_start(playlist.id)
 
             for link in linkz:
                 playlist.links.append(link)
@@ -209,14 +233,14 @@ class Playlist(db.Model):
     def __repr__(self):
         return "Playlist : {}".format(self.name)
 
-    def update_playlist(self, new_name, *new_movies):
+    def update_playlist(self, new_name, play_on_start, *new_movies):
 
         # directory = new_name.replace(" ", "")
         # playlist_root_directory = PLAYLIST_ROOT + directory + "/"
 
         # list of tuples (movie, link)
         movie_link_pairs = []
-
+        self.play_on_start = play_on_start
         try:
             if self.name != new_name:
                 # Name Change!
@@ -238,6 +262,14 @@ class Playlist(db.Model):
                 self.set_directory_path(playlist_root_directory)
 
                 new_movies = new_movies[0]  # convert tuple to list
+
+                # if no movies than set play on start to False, also if play on start True, reset others to False
+                if len(new_movies) == 0:
+                    self.play_on_start = False
+                # New playlist is being set to play on start, reset others to False
+                if self.play_on_start:
+                    set_playlist_to_play_on_start(self.id)
+
                 for movie in new_movies:
                     link_path = playlist_root_directory + str(new_movies.index(movie)) + ".mp4"
                     video_link = VideoLink(movie=movie, link_path=link_path)
@@ -276,6 +308,14 @@ class Playlist(db.Model):
                 playlist_root_directory = PLAYLIST_ROOT + self.directory_name + "/"
 
                 new_movies = new_movies[0]  # convert tuple to list
+
+                # if no movies than set play on start to False
+                if len(new_movies) == 0:
+                    self.play_on_start = False
+                # New playlist is being set to play on start, reset others to False
+                if self.play_on_start:
+                    set_playlist_to_play_on_start(self.id)
+
                 for movie in new_movies:
                     link_path = playlist_root_directory + str(new_movies.index(movie)) + ".mp4"
                     video_link = VideoLink(movie=movie, link_path=link_path)

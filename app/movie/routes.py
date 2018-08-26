@@ -7,6 +7,7 @@ Description - Routes for kiosk movie model
 
 import os
 
+import requests
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 from werkzeug.utils import secure_filename
@@ -96,7 +97,7 @@ def create_playlist():
     form = CreatePlaylistForm()
     if form.validate_on_submit():
 
-        Playlist.create_playlist(form.name.data, form.movies.data)
+        Playlist.create_playlist(form.name.data, form.play_on_start.data, form.movies.data)
         return redirect(url_for('main.playlist_list'))
 
     return render_template('create_playlist.html', form=form)
@@ -126,6 +127,7 @@ def edit_playlist(playlist_id):
 
     form = EditPlaylistForm(obj=playlist)
     if request.method == 'GET':
+        form.play_on_start = playlist.play_on_start
         if playlist.links:
             # if there are links, then retrieve the movies that they link to
             links = playlist.links
@@ -134,8 +136,8 @@ def edit_playlist(playlist_id):
 
     if form.validate_on_submit():
         # Update name and movie list of playlist
-        playlist.update_playlist(form.name.data, form.movies.data)
-
+        # playlist.play_on_start = form.play_on_start.data
+        playlist.update_playlist(form.name.data, form.play_on_start.data, form.movies.data)
         return redirect(url_for('main.playlist_list'))
 
     return render_template('edit_playlist.html', form=form)
@@ -205,21 +207,33 @@ def stop_loop_video():
 def loop_playlist():
     playlist_id = request.args.get('playlist_id')
     BobUecker.loop_playlist(playlist_id)
+    return 'loop playlist'
 
 
 @main.route('/stop_loop_playlist/')
 def stop_loop_playlist():
     BobUecker.all_not_playing()
     BobUecker.stop_video()
+    return 'stop loop playlist'
 
 
 @main.route('/sleep_kiosk_display/')
 def sleep_kiosk_display():
     BobUecker.sleep_display()
-    return ''
+    return 'sleep kiosk display'
 
 
 @main.route('/wake_kiosk_display/')
 def wake_kiosk_display():
     BobUecker.wake_display()
-    return ''
+
+    # Check for any playlist set to play on wake
+    playlist = Playlist.query.filter_by(play_on_start=True).first()
+    if playlist:
+        # # Construct payload to package with request
+        # payload = {"playlist_id": playlist.id}
+        # requests.get('http://0.0.0.0:5100/loop_playlist', params=payload)
+        BobUecker.loop_playlist(playlist.id)
+
+
+    return 'wake kiosk display'

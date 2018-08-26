@@ -291,20 +291,8 @@ class BobUecker(object):
 
     @classmethod
     def wake_display(cls):
-        # os.system(BobUecker.DISPLAY_WAKE_COMMAND)
-        # process2 = subprocess.Popen([BobUecker.POWER_HDMI_ON_COMMAND],
-        #                             shell=True,
-        #                             stdin=None,
-        #                             stdout=None,
-        #                             stderr=None,
-        #                             close_fds=True)
-        #
-        # message2 = process2.poll()
-        # process_pid2 = process2.pid
-        #
-        # sleep(750)
 
-        wake_cmd = '/home/pi/node_kiosk_B/app/utils/wakeup.sh'
+        wake_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/wakeup.sh'
         process = subprocess.Popen(wake_cmd,
                                    shell=True,
                                    stdin=None,
@@ -312,23 +300,13 @@ class BobUecker(object):
                                    stderr=None,
                                    close_fds=True)
 
-        # process = subprocess.Popen([BobUecker.DISPLAY_WAKE_COMMAND],
-        #                            shell=True,
-        #                            stdin=None,
-        #                            stdout=None,
-        #                            stderr=None,
-        #                            close_fds=True)
-        message = process.poll()
-        process_pid = process.pid
-        dummy = 1
-
     @classmethod
     def sleep_display(cls):
         BobUecker.all_not_playing()
         BobUecker.stop_playlist()
         BobUecker.stop_video()
 
-        sleep_cmd = '/home/pi/node_kiosk_B/app/utils/sleep_standby.sh'
+        sleep_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/sleep_standby.sh'
 
         process = subprocess.Popen(sleep_cmd,
                                    shell=True,
@@ -336,26 +314,3 @@ class BobUecker(object):
                                    stdout=None,
                                    stderr=None,
                                    close_fds=True)
-
-        # process = subprocess.Popen([BobUecker.DISPLAY_STANDBY_COMMAND],
-        #                            shell=True,
-        #                            stdin=None,
-        #                            stdout=None,
-        #                            stderr=None,
-        #                            close_fds=True)
-        message = process.poll()
-        process_pid = process.pid
-        dummy = 1
-        # sleep(750)
-        #
-        # process2 = subprocess.Popen([BobUecker.POWER_HDMI_OFF_COMMAND],
-        #                             shell=True,
-        #                             stdin=None,
-        #                             stdout=None,
-        #                             stderr=None,
-        #                             close_fds=True)
-        #
-        # message2 = process2.poll()
-        # process_pid2 = process2.pid
-        # os.system(BobUecker.DISPLAY_STANDBY_COMMAND)
-        # os.system(BobUecker.POWER_OFF_COMMAND)
