@@ -7,7 +7,6 @@ Description - System monitor utilities
 
 import os
 import subprocess
-from time import sleep
 
 import psutil
 from flask import jsonify
@@ -25,6 +24,7 @@ class SystemMonitor:
     json_data = {}
 
     def __init__(self):
+        ###############################################################################
         # Return CPU temperature as a character string
         cpu_temp = float(os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline())
         cpu_temp = float(cpu_temp / 1000.)
@@ -32,23 +32,31 @@ class SystemMonitor:
 
         cpu_utilization = str(psutil.cpu_percent()) + '%'
 
+        ###############################################################################
         # Pull uptime in seconds
         # Days
         seconds = float(os.popen("awk '{print $1}' /proc/uptime").readline())
         days = int(seconds // (24 * 3600))
 
+        ###############################################################################
         # Hours
         seconds = seconds % (24 * 3600)
         hours = int(seconds // 3600)
 
+        ###############################################################################
         # Minutes
         seconds %= 3600
         minutes = int(seconds // 60)
 
+        ###############################################################################
         # Seconds
         seconds %= 60
         seconds = int(seconds)
 
+        ###############################################################################
+        #
+        # Build uptime stats dictionary
+        #
         uptime_stats = {
             "days": days,
             "hours": hours,
@@ -56,30 +64,46 @@ class SystemMonitor:
             "seconds": seconds
         }
 
+        ###############################################################################
         # Memory calculation
         memory = psutil.virtual_memory()
         # Divide from Bytes -> KB -> MB
         memory_available = str(round(memory.available / 1024.0 / 1024.0, 1)) + " MB"
         memory_total = str(round(memory.total / 1024.0 / 1024.0, 1)) + " MB"
         memory_used_percent = str(memory.percent) + "%"
+
+        ###############################################################################
+        #
+        # Build memory stats dictionary
+        #
         memory_stats = {
             "memory_total": memory_total,
             "memory_available": memory_available,
             "memory_used_percent": memory_used_percent
         }
 
+        ###############################################################################
         # Disk stats
         disk = psutil.disk_usage('/')
         # Divide from Bytes -> KB -> MB -> GB
         disk_free = str(round(disk.free / 1024.0 / 1024.0 / 1024.0, 1)) + " GB"
         disk_total = str(round(disk.total / 1024.0 / 1024.0 / 1024.0, 1)) + " GB"
         disk_used_percent = str(disk.percent) + "%"
+
+        ###############################################################################
+        #
+        # Build disk stats dictionary
+        #
         disk_stats = {
             "disk_total": disk_total,
             "disk_free": disk_free,
             "disk_used_percent": disk_used_percent
         }
 
+        ###############################################################################
+        #
+        # Build Movie dictionary
+        #
         movie_output = []
         movies = Movie.query.all()
         for movie in movies:
@@ -94,6 +118,10 @@ class SystemMonitor:
 
         movie_output = sorted(movie_output, key=lambda i: i['id'], reverse=False)
 
+        ###############################################################################
+        #
+        # Build Playlist dictionary
+        #
         playlist_output = []
         playlists = Playlist.query.all()
         for playlist in playlists:
@@ -107,6 +135,10 @@ class SystemMonitor:
 
         playlist_output = sorted(playlist_output, key=lambda i: i['id'], reverse=False)
 
+        ###############################################################################
+        #
+        # Build Status dictionary
+        #
         self.json_data = {
             "system": {
                 "cpu_temp": cpu_temp,
@@ -147,22 +179,27 @@ class SystemMonitor:
         else:
             return 'ERROR'
 
-    @classmethod
-    def start_display_monitor(cls):
-        """
-            Launch bash script that continuously monitors the state of the display monitor, the script
-            writes and updates to the display_status.txt file
-        """
-        cmd = "/home/pi/node_kiosk_B/app/utils/display_status.sh"
-        process = subprocess.Popen(['/bin/bash', '-c', cmd])
-        return process.pid
+    # @classmethod
+    # def start_display_monitor(cls):
+    #     """
+    #         Launch bash script that continuously monitors the state of the display monitor, the script
+    #         writes and updates to the display_status.txt file
+    #     """
+    #     cmd = "/home/pi/node_kiosk_B/app/utils/display_status.sh"
+    #     process = subprocess.Popen(['/bin/bash', '-c', cmd])
+    #     return process.pid
 
-
+###############################################################################
+#
+# Kill, Loop, single play and playlist loop commands
+#
+###############################################################################
 kill_command_single_video = 'sudo killall omxplayer.bin'
 loop_command = 'omxplayer --no-osd -o local --loop --aspect-mode stretch '
 single_play_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
-
 playlist_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
+#
+###############################################################################
 
 
 class BobUecker(object):
@@ -172,7 +209,10 @@ class BobUecker(object):
 
     @classmethod
     def all_not_playing(cls):
-        # Set all movies and playlists to not currently playing
+        ###############################################################################
+        #
+        # Query the database and set all movies and playlists to not currently playing
+        #
         movies = Movie.query.all()
         for movie in movies:
             movie.currently_playing = False
@@ -221,24 +261,41 @@ class BobUecker(object):
 
     @classmethod
     def loop_video(cls, video_id):
+        """
+        Take video_id, find video in database, retrieve full filepath, launch script that
+        loops a single video as subprocess
+        :param video_id:
+        :return:
+        """
 
+        ###############################################################################
+        #
+        # Retrieve movie by ID and set all to not playing
+        #
         movie = Movie.query.get(video_id)
-
         BobUecker.all_not_playing()
 
         full_file_path = movie.location
         command = loop_command + full_file_path
+
+        ###############################################################################
+        #
+        # Kill playlist script if running, kill video player if running
+        #
         BobUecker.stop_playlist()
         BobUecker.stop_video()
 
         cmd = "/home/pi/node_kiosk_B/app/utils/video_looper.sh" + " " + full_file_path
-
         process = subprocess.Popen(['/bin/bash', '-c', cmd])
 
         message = process.poll()
         BobUecker.PLAYSCRIPT_PID = process.pid
         output_str = "The process pid is : {}".format(BobUecker.PLAYSCRIPT_PID)
 
+        ###############################################################################
+        #
+        # Set current movie to playing, save to database
+        #
         movie.currently_playing = True
         db.session.commit()
 
@@ -246,9 +303,26 @@ class BobUecker(object):
 
     @classmethod
     def loop_playlist(cls, playlist_id):
+        """
+        Given a playlist_id, a playlist by that ID is retrieved from the database, the full file path is
+        returned.  All videos and playlists are set to not playing, all playing videos and playlists are stopped.
+
+        Then a playlist_looper.sh script is launched, The PID of that script is saved as a class variable.
+
+        :param playlist_id:
+        :return:
+        """
+        ###############################################################################
+        #
+        # Retrieve playlist by ID and set all to not playing
+        #
         playlist = Playlist.query.get(playlist_id)
         directory_path = " " + playlist.directory_path
 
+        ###############################################################################
+        #
+        # Kill playlist script if running, kill video player if running
+        #
         BobUecker.all_not_playing()
         BobUecker.stop_playlist()
         BobUecker.stop_video()
@@ -261,6 +335,10 @@ class BobUecker(object):
         BobUecker.PLAYSCRIPT_PID = process.pid
         output_str = "The process pid is : {}".format(BobUecker.PLAYSCRIPT_PID)
 
+        ###############################################################################
+        #
+        # Set current movie to playing, save to database
+        #
         playlist.currently_playing = True
         db.session.commit()
 
@@ -269,7 +347,10 @@ class BobUecker(object):
 
     @classmethod
     def stop_playlist(cls):
+        ###############################################################################
+        #
         # Use PID to stop playlist script, then stop_video to terminate the video that is left playing
+        #
         if BobUecker.PLAYSCRIPT_PID:
             kill_command_playlist = "sudo kill -SIGTERM " + str(BobUecker.PLAYSCRIPT_PID)
             os.system(kill_command_playlist)
@@ -291,7 +372,10 @@ class BobUecker(object):
 
     @classmethod
     def wake_display(cls):
-
+        ###############################################################################
+        #
+        # Launch display wakeup command
+        #
         wake_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/wakeup.sh'
         process = subprocess.Popen(wake_cmd,
                                    shell=True,
@@ -302,6 +386,10 @@ class BobUecker(object):
 
     @classmethod
     def sleep_display(cls):
+        ###############################################################################
+        #
+        # Launch display shutdown command
+        #
         BobUecker.all_not_playing()
         BobUecker.stop_playlist()
         BobUecker.stop_video()

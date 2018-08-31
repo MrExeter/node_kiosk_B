@@ -7,7 +7,6 @@ Description - Routes for kiosk movie model
 
 import os
 
-import requests
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_required
 from werkzeug.utils import secure_filename

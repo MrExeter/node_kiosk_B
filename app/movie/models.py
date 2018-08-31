@@ -18,6 +18,10 @@ link_playlists = db.Table('link_playlists',
 
 
 class Movie(db.Model):
+    """
+    Movie model has a "one-to-many" relationship between it and the video-link object.  One movie may be related to
+    many VideoLinks
+    """
     __tablename__ = 'movie'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +76,10 @@ class Movie(db.Model):
 
 
 class VideoLink(db.Model):
+    """
+    VideoLink object has a "many-to-one" relationship between it and the Movie object.  One Movie may be related to
+    many VideoLinks
+    """
     __tablename__ = 'videolink'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -110,8 +118,14 @@ class VideoLink(db.Model):
             db.session.rollback()
             print("Database Error encountered")
 
-
+###############################################################################
+#
+# Define the root directory of all playlists
+#
 PLAYLIST_ROOT = "/home/pi/node_kiosk_B/app/static/videos/playlists/"
+#
+#
+###############################################################################
 
 
 def set_playlist_to_play_on_start(id):
@@ -163,11 +177,17 @@ class Playlist(db.Model):
 
         directory = playlist.directory_name
 
+        ###############################################################################
+        #
         # Root of all playlist directories
+        #
         playlist_root_directory = PLAYLIST_ROOT + directory + "/"
         playlist.set_directory_path(playlist_root_directory)
 
+        ###############################################################################
+        #
         # List that will be used to pass tuples of (movie, link)
+        #
         movie_link_pairs = []
 
         try:
@@ -187,14 +207,20 @@ class Playlist(db.Model):
                 link_path = playlist_root_directory + str(movies.index(movie)) + ".mp4"
                 video_link = VideoLink(movie=movie, link_path=link_path)
 
+                ###############################################################################
+                #
                 # List of tuples (movie, link) used to create links on disk
+                #
                 movie_link_pairs.append((movie, video_link))
 
                 db.session.add(video_link)
                 db.session.commit()
                 linkz.append(video_link)
 
+            ###############################################################################
+            #
             # New playlist is being set to play on start, reset others to False
+            #
             if playlist.play_on_start:
                 set_playlist_to_play_on_start(playlist.id)
 
@@ -202,7 +228,10 @@ class Playlist(db.Model):
                 playlist.links.append(link)
             db.session.commit()
 
+            ###############################################################################
+            #
             # Create playlist directory and symlinks
+            #
             create_linkcontroller = LinkController()
             create_linkcontroller.create_playlist_directory(playlist_root_directory)
             create_linkcontroller.create_links(directory, *movie_link_pairs)
@@ -243,14 +272,20 @@ class Playlist(db.Model):
         self.play_on_start = play_on_start
         try:
             if self.name != new_name:
+                ###############################################################################
+                #
                 # Name Change!
                 # Complete change, playlist name changes, create new playlist directory and populate with links
+                #
                 old_name = self.name
                 old_directory_name = self.directory_name
                 self.set_name(new_name)
                 db.session.commit()
 
+                ###############################################################################
+                #
                 # Retrieve old links for deletion
+                #
                 old_links = self.links
                 for old_link in old_links:
                     db.session.delete(old_link)
@@ -263,10 +298,16 @@ class Playlist(db.Model):
 
                 new_movies = new_movies[0]  # convert tuple to list
 
+                ###############################################################################
+                #
                 # if no movies than set play on start to False, also if play on start True, reset others to False
+                #
                 if len(new_movies) == 0:
                     self.play_on_start = False
+                ###############################################################################
+                #
                 # New playlist is being set to play on start, reset others to False
+                #
                 if self.play_on_start:
                     set_playlist_to_play_on_start(self.id)
 
@@ -284,12 +325,18 @@ class Playlist(db.Model):
                     self.links.append(link)
                 db.session.commit()
 
+                ###############################################################################
+                #
                 # Delete old links and old playlist directory
+                #
                 delete_linkcontroller = LinkController()
                 delete_linkcontroller.delete_links(old_directory_name)
                 delete_linkcontroller.delete_playlist_directory(old_directory_name)
 
+                ###############################################################################
+                #
                 # Create new playlist directory and populate with new links
+                #
                 create_linkcontroller = LinkController()
                 create_linkcontroller.create_playlist_directory(playlist_root_directory)
                 create_linkcontroller.create_links(self.directory_name, *movie_link_pairs)
@@ -297,7 +344,10 @@ class Playlist(db.Model):
                 flash('Playlist Updated Successful')
 
             else:
+                ###############################################################################
+                #
                 # Path doesn't change, just delete links that are now dead, save those that are valid
+                #
                 old_links = self.links
                 for old_link in old_links:
                     db.session.delete(old_link)
@@ -309,7 +359,10 @@ class Playlist(db.Model):
 
                 new_movies = new_movies[0]  # convert tuple to list
 
+                ###############################################################################
+                #
                 # if no movies than set play on start to False
+                #
                 if len(new_movies) == 0:
                     self.play_on_start = False
                 # New playlist is being set to play on start, reset others to False
@@ -330,7 +383,10 @@ class Playlist(db.Model):
                     self.links.append(link)
                 db.session.commit()
 
+                ###############################################################################
+                #
                 # Delete old links and create new links disk
+                #
                 update_linkcontroller = LinkController()
                 update_linkcontroller.delete_links(self.directory_name)
                 update_linkcontroller.create_links(self.directory_name, *movie_link_pairs)
