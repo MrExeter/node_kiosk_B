@@ -21,4 +21,4 @@ if __name__ == '__main__':
                              email='napoleon@dynamite.com',
                              password='applejack')
 
-    flask_app.run(debug=True, host='0.0.0.0', port=5100, threaded=True)
+    flask_app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
