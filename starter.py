@@ -51,7 +51,7 @@ class Starter:
 
         # launch flask server by by running run, save UID of process
         launch_flask_cmd = ["python", "run.py"]
-        process = subprocess.Popen(launch_flask_cmd)
+        process = subprocess.Popen(launch_flask_cmd).wait()
         # process = subprocess.call(launch_flask_cmd)
         # process = subprocess.check_output(launch_flask_cmd)
         flask_pid = process.pid
