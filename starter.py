@@ -7,6 +7,7 @@ Description - File and utility class to start flask app plus all support scripts
 
 import os
 import subprocess
+from time import sleep
 
 import psutil
 
@@ -44,14 +45,26 @@ class Starter:
         # launch display script and save UID of process
         #
         display_status_cmd = '/home/pi/node_kiosk_B/app/utils/display_status.sh'
-        process = subprocess.Popen(display_status_cmd)
+        process = subprocess.Popen(display_status_cmd,
+                                   shell=True,
+                                   stdin=None,
+                                   stdout=None,
+                                   stderr=None,
+                                   close_fds=True)
         script_pid = process.pid
         Starter.DISPLAY_SCRIPT_UID = script_pid
         print("The display script PID is : {}".format(script_pid))
 
         # launch flask server by by running run, save UID of process
-        launch_flask_cmd = ["python", "run.py"]
-        process = subprocess.Popen(launch_flask_cmd).wait()
+        # launch_flask_cmd = ["python", "run.py"]
+        launch_flask_cmd = "python run.py"
+        process = subprocess.Popen(launch_flask_cmd,
+                                   shell=True,
+                                   stdin=None,
+                                   stdout=None,
+                                   stderr=None,
+                                   close_fds=True)
+        sleep(10)
         # process = subprocess.call(launch_flask_cmd)
         # process = subprocess.check_output(launch_flask_cmd)
         flask_pid = process.pid
@@ -59,10 +72,10 @@ class Starter:
         print("The Flask app is launched with PID : {}".format(Starter.FLASKAPP_UID))
 
 
-###############################################################################
-#
-# Launch display wakeup command
-#
+# ###############################################################################
+# #
+# # Launch display wakeup command
+# #
 # flask_cmd = 'lsof -i :5000'
 # # return_str = str(os.system(flask_cmd))
 # try:
@@ -74,10 +87,16 @@ class Starter:
 #     os.system('kill ' + the_PID)
 # except subprocess.CalledProcessError:
 #     print("Nothing found")
-
-###############################################################################
 #
-# Launch display wakeup command
+# # launch flask server by by running run, save UID of process
+# launch_flask_cmd = ["python", "run.py"]
+# # flask_process = subprocess.Popen(launch_flask_cmd, shell=True)
+# os.system('python run.py')
+# sleep(10)
+
+# ##############################################################################
+#
+# # Launch display wakeup command
 #
 # display_status_cmd = '/home/pi/node_kiosk_B/app/utils/display_status.sh'
 # process = subprocess.Popen(display_status_cmd)
@@ -88,4 +107,5 @@ class Starter:
 
 Starter.clean_and_clear()
 Starter.start_all()
+sleep(15)
 # process = subprocess.call(['python', 'hello_test.py'])
