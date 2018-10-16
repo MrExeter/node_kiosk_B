@@ -32,6 +32,20 @@ class Starter:
         except subprocess.CalledProcessError:
             print("Nothing found")
 
+
+
+        display_pids_cmd = ['pgrep', '-f', 'display_status']
+
+        try:
+            display_pids = subprocess.check_output(display_pids_cmd).split()
+
+            debug = 99
+            for pid in display_pids:
+                os.system('kill ' + pid)
+        except subprocess.CalledProcessError:
+            print("Display script not running")
+
+
         if Starter.DISPLAY_SCRIPT_UID is not None:
             os.system('kill ' + Starter.DISPLAY_SCRIPT_UID)
 
