@@ -14,6 +14,12 @@ from flask import jsonify
 from app import db
 from app.movie.models import Movie, Playlist
 
+DISPLAY_STATUS_FILE = "/home/pi/node_kiosk_B/app/utils/display_status.txt"
+VIDEO_LOOP_SCRIPT = "/home/pi/node_kiosk_B/app/utils/video_looper.sh "
+PLAYLIST_LOOPER_SCRIPT = "/home/pi/node_kiosk_B/app/utils/playlist_looper.sh"
+SLEEP_DISPLAY_COMMAND = 'sudo /home/pi/node_kiosk_B/app/utils/sleep_standby.sh'
+WAKE_DISPLAY_COMMAND = 'sudo /home/pi/node_kiosk_B/app/utils/wakeup.sh'
+
 
 class SystemMonitor:
     cpu_temp = 0
@@ -28,7 +34,7 @@ class SystemMonitor:
         # Return CPU temperature as a character string
         cpu_temp = float(os.popen('cat /sys/class/thermal/thermal_zone0/temp').readline())
         cpu_temp = float(cpu_temp / 1000.)
-        cpu_temp = str(round(cpu_temp, 1))      # + " C"
+        cpu_temp = str(round(cpu_temp, 1))  # + " C"
 
         cpu_utilization = str(psutil.cpu_percent()) + '%'
 
@@ -168,9 +174,8 @@ class SystemMonitor:
             Standby -- Monitor connected but in standby
             ERROR -- Monitor error state, The HDMI cable likely not connected or damaged
         """
-        file = "/home/pi/node_kiosk_B/app/utils/display_status.txt"
-        lines = tuple(open(file, 'r'))      # Open display status file
-        lines = ''.join(lines).rstrip()     # Convert to string and strip newline character
+        lines = tuple(open(DISPLAY_STATUS_FILE, 'r'))  # Open display status file
+        lines = ''.join(lines).rstrip()  # Convert to string and strip newline character
 
         if lines == 'On':
             return 'On'
@@ -189,6 +194,7 @@ class SystemMonitor:
     #     process = subprocess.Popen(['/bin/bash', '-c', cmd])
     #     return process.pid
 
+
 ###############################################################################
 #
 # Kill, Loop, single play and playlist loop commands
@@ -198,12 +204,13 @@ kill_command_single_video = 'sudo killall omxplayer.bin'
 loop_command = 'omxplayer --no-osd -o local --loop --aspect-mode stretch '
 single_play_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
 playlist_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
+
+
 #
 ###############################################################################
 
 
 class BobUecker(object):
-
     # Class variable to store PID of playlist looping script
     PLAYSCRIPT_PID = None
 
@@ -285,7 +292,7 @@ class BobUecker(object):
         BobUecker.stop_playlist()
         BobUecker.stop_video()
 
-        cmd = "/home/pi/node_kiosk_B/app/utils/video_looper.sh" + " " + full_file_path
+        cmd = VIDEO_LOOP_SCRIPT + full_file_path
         process = subprocess.Popen(['/bin/bash', '-c', cmd])
 
         message = process.poll()
@@ -327,7 +334,7 @@ class BobUecker(object):
         BobUecker.stop_playlist()
         BobUecker.stop_video()
 
-        cmd = "/home/pi/node_kiosk_B/app/utils/playlist_looper.sh" + directory_path
+        cmd = PLAYLIST_LOOPER_SCRIPT + directory_path
 
         process = subprocess.Popen(['/bin/bash', '-c', cmd])
 
@@ -376,8 +383,8 @@ class BobUecker(object):
         #
         # Launch display wakeup command
         #
-        wake_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/wakeup.sh'
-        process = subprocess.Popen(wake_cmd,
+        # wake_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/wakeup.sh'
+        process = subprocess.Popen(WAKE_DISPLAY_COMMAND,
                                    shell=True,
                                    stdin=None,
                                    stdout=None,
@@ -394,9 +401,9 @@ class BobUecker(object):
         BobUecker.stop_playlist()
         BobUecker.stop_video()
 
-        sleep_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/sleep_standby.sh'
+        # sleep_cmd = 'sudo /home/pi/node_kiosk_B/app/utils/sleep_standby.sh'
 
-        process = subprocess.Popen(sleep_cmd,
+        process = subprocess.Popen(SLEEP_DISPLAY_COMMAND,
                                    shell=True,
                                    stdin=None,
                                    stdout=None,

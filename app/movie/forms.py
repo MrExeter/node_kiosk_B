@@ -9,9 +9,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired
 from werkzeug.utils import secure_filename
 from wtforms import StringField, SubmitField, FileField, BooleanField
-# from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
-# from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms_alchemy import QuerySelectMultipleField
 
 from app.movie.models import Movie, Playlist
@@ -79,7 +77,6 @@ class CreatePlaylistForm(FlaskForm):
 
 
 class EditPlaylistForm(FlaskForm):
-    # name = StringField('Name', render_kw={'readonly': True})
     name = StringField('Name', validators=[DataRequired(),
                                            edit_playlist_name_exists])
 
