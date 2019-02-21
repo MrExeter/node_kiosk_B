@@ -18,10 +18,8 @@ link_playlists = db.Table('link_playlists',
 
 
 class Movie(db.Model):
-    """
-    Movie model has a "one-to-many" relationship between it and the video-link object.  One movie may be related to
-    many VideoLinks
-    """
+    """Movie model has a "one-to-many" relationship between it and the \
+    video-link object.  One movie may be related to many VideoLinks"""
     __tablename__ = 'movie'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -76,10 +74,8 @@ class Movie(db.Model):
 
 
 class VideoLink(db.Model):
-    """
-    VideoLink object has a "many-to-one" relationship between it and the Movie object.  One Movie may be related to
-    many VideoLinks
-    """
+    """VideoLink object has a "many-to-one" relationship between it and the \
+    Movie object.  One Movie may be related to many VideoLinks"""
     __tablename__ = 'videolink'
 
     id = db.Column(db.Integer, primary_key=True)
