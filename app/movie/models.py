@@ -140,6 +140,9 @@ def set_playlist_to_play_on_start(id):
 
 
 class Playlist(db.Model):
+    """Playlist represents a playlist of videos, described by a name, \
+    a directory path, directory name, currently playing boolean \
+    flag and a play on start boolean flag"""
     __tablename__ = 'playlist'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -173,9 +176,13 @@ class Playlist(db.Model):
 
     @classmethod
     def create_playlist(cls, name, play_on_start, *movies):
+        """Create playlist classmethod, with name, play_on_start, \
+        and a list of movie objects"""
         playlist = cls(name, play_on_start)
 
         directory = playlist.directory_name
+
+        """:raises IntegrityError: """
 
         ###############################################################################
         #
