@@ -20,7 +20,8 @@ ALLOWED_EXTENSIONS = set(['mp4', 'jpeg', 'avi', 'mov', 'wmv'])
 
 
 def create_app(config_type):
-    app = Flask(__name__)
+    # app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/', static_folder='_build/html/')
     configuration = os.path.join(os.getcwd(), 'config', config_type + '.py')
 
     app.config.from_pyfile(configuration)

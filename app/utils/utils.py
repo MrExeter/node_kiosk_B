@@ -22,6 +22,7 @@ WAKE_DISPLAY_COMMAND = 'sudo /home/pi/node_kiosk_B/app/utils/wakeup.sh'
 
 
 class SystemMonitor:
+    """Class for monitoring system statistics"""
     cpu_temp = 0
     cpu_utilization = None
     up_time = {}
@@ -211,6 +212,7 @@ playlist_command = 'omxplayer --no-osd -o local --aspect-mode stretch '
 
 
 class BobUecker(object):
+    """Utility class for controlling the Node"""
     # Class variable to store PID of playlist looping script
     PLAYSCRIPT_PID = None
 
@@ -354,10 +356,9 @@ class BobUecker(object):
 
     @classmethod
     def stop_playlist(cls):
-        ###############################################################################
-        #
-        # Use PID to stop playlist script, then stop_video to terminate the video that is left playing
-        #
+        """Use PID to stop playlist script, then stop_video to terminate the \
+        video that is left playing"""
+
         if BobUecker.PLAYSCRIPT_PID:
             kill_command_playlist = "sudo kill -SIGTERM " + str(BobUecker.PLAYSCRIPT_PID)
             os.system(kill_command_playlist)
@@ -379,6 +380,7 @@ class BobUecker(object):
 
     @classmethod
     def wake_display(cls):
+        """Wakes display"""
         ###############################################################################
         #
         # Launch display wakeup command
@@ -393,6 +395,7 @@ class BobUecker(object):
 
     @classmethod
     def sleep_display(cls):
+        """Puts display into standby mode"""
         ###############################################################################
         #
         # Launch display shutdown command

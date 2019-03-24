@@ -27,20 +27,26 @@ def display_movies():
 @main.route('/movies')
 @login_required
 def movie_list():
+    """Display all movies currently available on the node"""
     movies = Movie.query.all()
     return render_template('movie_list.html', movies=movies)
 
 
-@main.route('/remote/movies')
-@login_required
-def remote_movie_list():
-    movies = Movie.query.all()
-    return render_template('movie_list.html', movies=movies)
+# @main.route('/remote/movies')
+# @login_required
+# def remote_movie_list():
+#     movies = Movie.query.all()
+#     return render_template('movie_list.html', movies=movies)
 
 
 @main.route('/movie/detail/<movie_id>')
 @login_required
 def movie_detail(movie_id):
+    """
+    Displays movie details base on an ID
+    :param movie_id:
+    :return: Renders movie detail template for given movie
+    """
     movie = Movie.query.get(movie_id)
     return render_template('movie_detail.html', movie=movie)
 
@@ -48,6 +54,11 @@ def movie_detail(movie_id):
 @main.route('/movie/delete/<movie_id>', methods=['GET', 'POST'])
 @login_required
 def delete_movie(movie_id):
+    """
+    Deletes a movie based on an id, Will ask for a confirmation first.
+    :param movie_id:
+    :return:
+    """
     movie = Movie.query.get(movie_id)
     filename = movie.file_name
 
@@ -64,7 +75,11 @@ def delete_movie(movie_id):
 @main.route('/create/movie', methods=['GET', 'POST'])
 @login_required
 def create_movie():
-
+    """
+    Displays form for creating and uploading a movie object.
+    The user enters a name and is provided a file upload widget.
+    :return:
+    """
     form = CreateMovieForm()
 
     if form.validate_on_submit():
@@ -85,6 +100,7 @@ def create_movie():
 @main.route('/playlists')
 @login_required
 def playlist_list():
+    """Displays available playlists"""
     playlists = Playlist.query.all()
 
     return render_template('playlist_list.html', playlists=playlists)
@@ -93,6 +109,12 @@ def playlist_list():
 @main.route('/create/playlist', methods=['GET', 'POST'])
 @login_required
 def create_playlist():
+    """
+    Create playlist.
+    The user enters a name, selects videos for playlist and has the option to \
+    set video for play on boot.
+    :return:
+    """
     form = CreatePlaylistForm()
     if form.validate_on_submit():
 
@@ -105,7 +127,7 @@ def create_playlist():
 @main.route('/playlist/detail/<playlist_id>')
 @login_required
 def playlist_detail(playlist_id):
-
+    """Display playlist details given an ID"""
     playlist = Playlist.query.get(playlist_id)
     links = playlist.links
     movies = []
@@ -119,6 +141,7 @@ def playlist_detail(playlist_id):
 @main.route('/playlist/edit/<playlist_id>', methods=['GET', 'POST'])
 @login_required
 def edit_playlist(playlist_id):
+    """Edit playlist given an ID"""
     playlist = Playlist.query.get(playlist_id)
     session["current_playlist_name"] = playlist.name    # Save playlist name prior to editing
 
@@ -145,6 +168,7 @@ def edit_playlist(playlist_id):
 @main.route('/playlist/delete/<playlist_id>', methods=['GET', 'POST'])
 @login_required
 def delete_playlist(playlist_id):
+    """Delete a playlist based on its ID, confirmation is required"""
     playlist = Playlist.query.get(playlist_id)
     directory_name = playlist.directory_name
     if request.method == 'POST':
@@ -163,6 +187,7 @@ def delete_playlist(playlist_id):
 @main.route('/system_stats')
 # @login_required
 def get_system_stats():
+    """Returns JSON object containing system stats"""
     system_monitor = SystemMonitor()
     return system_monitor.get_system_stats()
 
@@ -233,6 +258,5 @@ def wake_kiosk_display():
         # payload = {"playlist_id": playlist.id}
         # requests.get('http://0.0.0.0:5100/loop_playlist', params=payload)
         BobUecker.loop_playlist(playlist.id)
-
 
     return 'wake kiosk display'

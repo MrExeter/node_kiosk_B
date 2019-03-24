@@ -39,7 +39,7 @@ def do_the_login():
         flash('you are already logged-in')
         return redirect(url_for('main.movie_list'))
 
-    form = LoginForm(csrf_enabled=False)
+    form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(user_email=form.email.data).first()
         if not user or not user.check_password(form.password.data):

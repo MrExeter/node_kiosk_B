@@ -36,6 +36,9 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    class Meta:
+        csrf = False
+
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     stay_loggedin = BooleanField('stay logged-in')
