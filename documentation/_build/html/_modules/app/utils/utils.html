@@ -1,36 +1,148 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>app.utils.utils &#8212; Node Kiosk 1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/haiku.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>app.utils.utils &mdash; Node Kiosk 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-      <div class="header" role="banner"><h1 class="heading"><a href="../../../index.html">
-          <span>Node Kiosk 1.0 documentation</span></a></h1>
-        <h2 class="heading"><span>app.utils.utils</span></h2>
-      </div>
-      <div class="topnav" role="navigation" aria-label="top navigation">
-      
-        <p>
-        <a class="uplink" href="../../../index.html">Contents</a>
-        </p>
+</head>
 
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Node Kiosk
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../node.html">Welcome to Node Kiosk’s documentation!</a></li>
+</ul>
+
+            
+          
+        </div>
       </div>
-      <div class="content">
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
         
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Node Kiosk</a>
         
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>app.utils.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
   <h1>Source code for app.utils.utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Description - System monitor utilities</span>
@@ -42,7 +154,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
-<span class="c1"># import psutil</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span>
 
 <span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">db</span>
@@ -71,7 +183,7 @@
         <span class="n">cpu_temp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cpu_temp</span> <span class="o">/</span> <span class="mf">1000.</span><span class="p">)</span>
         <span class="n">cpu_temp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">cpu_temp</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># + &quot; C&quot;</span>
 
-        <span class="c1"># cpu_utilization = str(psutil.cpu_percent()) + &#39;%&#39;</span>
+        <span class="n">cpu_utilization</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;%&#39;</span>
 
         <span class="c1">###############################################################################</span>
         <span class="c1"># Pull uptime in seconds</span>
@@ -107,38 +219,38 @@
 
         <span class="c1">###############################################################################</span>
         <span class="c1"># Memory calculation</span>
-        <span class="c1"># memory = psutil.virtual_memory()</span>
+        <span class="n">memory</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span>
         <span class="c1"># Divide from Bytes -&gt; KB -&gt; MB</span>
-        <span class="c1"># memory_available = str(round(memory.available / 1024.0 / 1024.0, 1)) + &quot; MB&quot;</span>
-        <span class="c1"># memory_total = str(round(memory.total / 1024.0 / 1024.0, 1)) + &quot; MB&quot;</span>
-        <span class="c1"># memory_used_percent = str(memory.percent) + &quot;%&quot;</span>
+        <span class="n">memory_available</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">memory</span><span class="o">.</span><span class="n">available</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; MB&quot;</span>
+        <span class="n">memory_total</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">memory</span><span class="o">.</span><span class="n">total</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; MB&quot;</span>
+        <span class="n">memory_used_percent</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">memory</span><span class="o">.</span><span class="n">percent</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span>
 
         <span class="c1">###############################################################################</span>
         <span class="c1">#</span>
         <span class="c1"># Build memory stats dictionary</span>
         <span class="c1">#</span>
         <span class="n">memory_stats</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="c1"># &quot;memory_total&quot;: memory_total,</span>
-            <span class="c1"># &quot;memory_available&quot;: memory_available,</span>
-            <span class="c1"># &quot;memory_used_percent&quot;: memory_used_percent</span>
+            <span class="s2">&quot;memory_total&quot;</span><span class="p">:</span> <span class="n">memory_total</span><span class="p">,</span>
+            <span class="s2">&quot;memory_available&quot;</span><span class="p">:</span> <span class="n">memory_available</span><span class="p">,</span>
+            <span class="s2">&quot;memory_used_percent&quot;</span><span class="p">:</span> <span class="n">memory_used_percent</span>
         <span class="p">}</span>
 
         <span class="c1">###############################################################################</span>
         <span class="c1"># Disk stats</span>
-        <span class="c1"># disk = psutil.disk_usage(&#39;/&#39;)</span>
+        <span class="n">disk</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
         <span class="c1"># Divide from Bytes -&gt; KB -&gt; MB -&gt; GB</span>
-        <span class="c1"># disk_free = str(round(disk.free / 1024.0 / 1024.0 / 1024.0, 1)) + &quot; GB&quot;</span>
-        <span class="c1"># disk_total = str(round(disk.total / 1024.0 / 1024.0 / 1024.0, 1)) + &quot; GB&quot;</span>
-        <span class="c1"># disk_used_percent = str(disk.percent) + &quot;%&quot;</span>
+        <span class="n">disk_free</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">disk</span><span class="o">.</span><span class="n">free</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; GB&quot;</span>
+        <span class="n">disk_total</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">disk</span><span class="o">.</span><span class="n">total</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; GB&quot;</span>
+        <span class="n">disk_used_percent</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">disk</span><span class="o">.</span><span class="n">percent</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span>
 
         <span class="c1">###############################################################################</span>
         <span class="c1">#</span>
         <span class="c1"># Build disk stats dictionary</span>
         <span class="c1">#</span>
         <span class="n">disk_stats</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="c1"># &quot;disk_total&quot;: disk_total,</span>
-            <span class="c1"># &quot;disk_free&quot;: disk_free,</span>
-            <span class="c1"># &quot;disk_used_percent&quot;: disk_used_percent</span>
+            <span class="s2">&quot;disk_total&quot;</span><span class="p">:</span> <span class="n">disk_total</span><span class="p">,</span>
+            <span class="s2">&quot;disk_free&quot;</span><span class="p">:</span> <span class="n">disk_free</span><span class="p">,</span>
+            <span class="s2">&quot;disk_used_percent&quot;</span><span class="p">:</span> <span class="n">disk_used_percent</span>
         <span class="p">}</span>
 
         <span class="c1">###############################################################################</span>
@@ -183,7 +295,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">json_data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;cpu_temp&quot;</span><span class="p">:</span> <span class="n">cpu_temp</span><span class="p">,</span>
-                <span class="c1"># &quot;cpu_utilization&quot;: cpu_utilization,</span>
+                <span class="s2">&quot;cpu_utilization&quot;</span><span class="p">:</span> <span class="n">cpu_utilization</span><span class="p">,</span>
                 <span class="s2">&quot;memory_stats&quot;</span><span class="p">:</span> <span class="n">memory_stats</span><span class="p">,</span>
                 <span class="s2">&quot;disk_stats&quot;</span><span class="p">:</span> <span class="n">disk_stats</span><span class="p">,</span>
                 <span class="s2">&quot;uptime&quot;</span><span class="p">:</span> <span class="n">uptime_stats</span><span class="p">},</span>
@@ -388,17 +500,16 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">output_str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output_str</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BobUecker.stop_playlist"><a class="viewcode-back" href="../../../node.html#app.utils.utils.BobUecker.stop_playlist">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">stop_playlist</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="c1">###############################################################################</span>
-        <span class="c1">#</span>
-        <span class="c1"># Use PID to stop playlist script, then stop_video to terminate the video that is left playing</span>
-        <span class="c1">#</span>
+        <span class="sd">&quot;&quot;&quot;Use PID to stop playlist script, then stop_video to terminate the \</span>
+<span class="sd">        video that is left playing&quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">BobUecker</span><span class="o">.</span><span class="n">PLAYSCRIPT_PID</span><span class="p">:</span>
             <span class="n">kill_command_playlist</span> <span class="o">=</span> <span class="s2">&quot;sudo kill -SIGTERM &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">BobUecker</span><span class="o">.</span><span class="n">PLAYSCRIPT_PID</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">kill_command_playlist</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">kill_command_single_video</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">stop_video</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -413,8 +524,9 @@
     <span class="n">POWER_HDMI_ON_COMMAND</span> <span class="o">=</span> <span class="s1">&#39;sudo tvservice -p&#39;</span>
     <span class="n">POWER_HDMI_OFF_COMMAND</span> <span class="o">=</span> <span class="s1">&#39;sudo tvservice --off&#39;</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BobUecker.wake_display"><a class="viewcode-back" href="../../../node.html#app.utils.utils.BobUecker.wake_display">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">wake_display</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Wakes display&quot;&quot;&quot;</span>
         <span class="c1">###############################################################################</span>
         <span class="c1">#</span>
         <span class="c1"># Launch display wakeup command</span>
@@ -425,10 +537,11 @@
                                    <span class="n">stdin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                    <span class="n">stdout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                    <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                   <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                   <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BobUecker.sleep_display"><a class="viewcode-back" href="../../../node.html#app.utils.utils.BobUecker.sleep_display">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">sleep_display</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Puts display into standby mode&quot;&quot;&quot;</span>
         <span class="c1">###############################################################################</span>
         <span class="c1">#</span>
         <span class="c1"># Launch display shutdown command</span>
@@ -444,21 +557,58 @@
                                    <span class="n">stdin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                    <span class="n">stdout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                    <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                   <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+                                   <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 </pre></div>
 
-      </div>
-      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
-      
-        <p>
-        <a class="uplink" href="../../../index.html">Contents</a>
-        </p>
+           </div>
+           
+          </div>
+          <footer>
+  
 
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Sentz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
       </div>
 
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, John Sentz.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
-    </div>
-  </body>
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
 </html>

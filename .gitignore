@@ -16,7 +16,7 @@ __pycache__/
 *.png
 
 # ignore sphinx enviorment pickle
-documentation/_build/doctrees/environment.*
+#documentation/_build/doctrees/environment.*
 
 # Distribution / packaging
 .Python

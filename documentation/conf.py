@@ -19,14 +19,14 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Node Kiosk'
-copyright = '2019, John Sentz'
-author = 'John Sentz'
+project = u'Node Kiosk'
+copyright = u'2019, John Sentz'
+author = u'John Sentz'
 
 # The short X.Y version
-version = ''
+version = u''
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = u'1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -68,7 +68,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -150,7 +150,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'NodeKiosk.tex', 'Node Kiosk Documentation',
-     'John Sentz', 'manual'),
+     u'John Sentz', 'manual'),
 ]
 
 
@@ -159,7 +159,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'nodekiosk', 'Node Kiosk Documentation',
+    (master_doc, 'nodekiosk', u'Node Kiosk Documentation',
      [author], 1)
 ]
 
@@ -170,7 +170,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'NodeKiosk', 'Node Kiosk Documentation',
+    (master_doc, 'NodeKiosk', u'Node Kiosk Documentation',
      author, 'NodeKiosk', 'One line description of project.',
      'Miscellaneous'),
 ]
